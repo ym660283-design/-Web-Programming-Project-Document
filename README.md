@@ -1,2 +1,1 @@
-# -Web-Programming-Project-Document
-웹프로그래밍 프로젝트 깃허브
+웹프로그래밍 여행 일정 공유 웹
