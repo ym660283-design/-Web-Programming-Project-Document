@@ -207,7 +207,7 @@ Trip Planner Web
 | Field | Type | 설명 |
 | --- | --- | --- |
 | user_id | INT | 사용자 고유 번호, Primary Key |
-| login_id | VARCHAR | 로그인 아이디 |
+| login_id | VARCHAR | 로그인 아이디, UNIQUE |
 | password | VARCHAR | 로그인 비밀번호 |
 | user_name | VARCHAR | 사용자 이름 |
 | email | VARCHAR | 사용자 이메일 |
@@ -317,14 +317,38 @@ Trip Planner Web
 
 # 7. 화면 설계
 
-## 화면 설계 이미지 첨부 위치
+## 메인 화면 설계
 
-추후 작성한 화면 설계 이미지는 아래 위치에 추가한다.
+![w:1100 h:400](./images/main-wireframe.svg)
+
+---
+
+# 7. 화면 설계
+
+## 여행 일정 목록 화면 설계
+
+![w:1100 h:400](./images/trip-list-wireframe.svg)
+
+---
+
+# 7. 화면 설계
+
+## 여행 일정 상세 화면 설계
+
+![w:1100 h:400](./images/trip-detail-wireframe.svg)
+
+---
+
+# 7. 화면 설계
+
+## 화면 설계 이미지 파일
+
+본 문서에 첨부한 화면 설계 이미지는 아래 위치에 저장한다.
 
 ```md
-![메인 화면 설계](./images/main-wireframe.png)
-![여행 일정 목록 화면 설계](./images/trip-list-wireframe.png)
-![여행 일정 상세 화면 설계](./images/trip-detail-wireframe.png)
+![w:1100 h:400](./images/main-wireframe.svg)
+![w:1100 h:400](./images/trip-list-wireframe.svg)
+![w:1100 h:400](./images/trip-detail-wireframe.svg)
 ```
 
 ---

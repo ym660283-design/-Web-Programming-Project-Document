@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450" viewBox="0 0 1200 450">
+  <rect width="1200" height="450" fill="#e2edf7"/>
+  <text x="60" y="60" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#0f172a">여행 일정 생성 화면 설계</text>
+
+  <rect x="60" y="95" width="430" height="300" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="95" y="140" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#0f172a">여행 기본 정보</text>
+  <rect x="95" y="170" width="340" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="115" y="195" font-family="Arial, sans-serif" font-size="17" fill="#64748b">여행 제목</text>
+  <rect x="95" y="220" width="160" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="115" y="245" font-family="Arial, sans-serif" font-size="17" fill="#64748b">시작일</text>
+  <rect x="275" y="220" width="160" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="295" y="245" font-family="Arial, sans-serif" font-size="17" fill="#64748b">종료일</text>
+  <rect x="95" y="270" width="340" height="76" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="115" y="300" font-family="Arial, sans-serif" font-size="17" fill="#64748b">여행 설명</text>
+  <rect x="95" y="360" width="340" height="38" rx="6" fill="#0284c7"/>
+  <text x="210" y="385" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">여행 일정 생성</text>
+
+  <rect x="570" y="95" width="560" height="300" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="605" y="140" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#0f172a">지도 검색으로 장소 지정</text>
+  <rect x="605" y="170" width="470" height="42" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="625" y="198" font-family="Arial, sans-serif" font-size="17" fill="#64748b">장소 검색어 입력</text>
+  <rect x="930" y="176" width="120" height="30" rx="6" fill="#0284c7"/>
+  <text x="970" y="197" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">검색</text>
+  <rect x="605" y="230" width="470" height="120" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="2"/>
+  <path d="M640 325 L725 270 L820 305 L920 250 L1035 300" fill="none" stroke="#0284c7" stroke-width="5"/>
+  <circle cx="725" cy="270" r="9" fill="#ef4444"/>
+  <circle cx="920" cy="250" r="9" fill="#ef4444"/>
+  <text x="625" y="378" font-family="Arial, sans-serif" font-size="17" fill="#334155">검색한 장소를 선택하여 여행 목적지로 저장</text>
+
+  <path d="M505 250 L550 250" stroke="#0284c7" stroke-width="5" fill="none"/>
+  <path d="M550 250 L530 237 L530 263 Z" fill="#0284c7"/>
+</svg>

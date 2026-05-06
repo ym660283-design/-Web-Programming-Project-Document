@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450" viewBox="0 0 1200 450">
+  <rect width="1200" height="450" fill="#e2edf7"/>
+  <text x="60" y="60" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#0f172a">날짜별 세부 일정 등록 화면 설계</text>
+
+  <rect x="60" y="95" width="320" height="300" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="90" y="140" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">날짜 선택</text>
+  <rect x="90" y="170" width="240" height="44" rx="8" fill="#0284c7"/>
+  <text x="140" y="199" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">1일차 05/10</text>
+  <rect x="90" y="230" width="240" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="140" y="259" font-family="Arial, sans-serif" font-size="18" fill="#334155">2일차 05/11</text>
+  <rect x="90" y="290" width="240" height="44" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="140" y="319" font-family="Arial, sans-serif" font-size="18" fill="#334155">3일차 05/12</text>
+
+  <rect x="440" y="95" width="330" height="300" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="470" y="140" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">세부 일정 등록</text>
+  <rect x="470" y="170" width="250" height="36" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="490" y="194" font-family="Arial, sans-serif" font-size="16" fill="#64748b">방문 장소</text>
+  <rect x="470" y="218" width="115" height="36" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="490" y="242" font-family="Arial, sans-serif" font-size="16" fill="#64748b">시간</text>
+  <rect x="605" y="218" width="115" height="36" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="625" y="242" font-family="Arial, sans-serif" font-size="16" fill="#64748b">비용</text>
+  <rect x="470" y="266" width="250" height="70" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="490" y="296" font-family="Arial, sans-serif" font-size="16" fill="#64748b">메모</text>
+  <rect x="470" y="350" width="250" height="36" rx="6" fill="#0284c7"/>
+  <text x="560" y="374" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff">등록</text>
+
+  <rect x="830" y="95" width="310" height="300" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="860" y="140" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#0f172a">등록 결과</text>
+  <line x1="880" y1="175" x2="880" y2="335" stroke="#38bdf8" stroke-width="4"/>
+  <circle cx="880" cy="190" r="8" fill="#0284c7"/>
+  <text x="905" y="197" font-family="Arial, sans-serif" font-size="17" fill="#334155">10:00 장소 방문</text>
+  <circle cx="880" cy="245" r="8" fill="#0284c7"/>
+  <text x="905" y="252" font-family="Arial, sans-serif" font-size="17" fill="#334155">13:00 식사</text>
+  <circle cx="880" cy="300" r="8" fill="#0284c7"/>
+  <text x="905" y="307" font-family="Arial, sans-serif" font-size="17" fill="#334155">16:00 카페</text>
+  <text x="860" y="370" font-family="Arial, sans-serif" font-size="16" fill="#64748b">날짜별 일정 목록에 자동 반영</text>
+
+  <path d="M395 245 L425 245" stroke="#0284c7" stroke-width="5" fill="none"/>
+  <path d="M425 245 L408 234 L408 256 Z" fill="#0284c7"/>
+  <path d="M785 245 L815 245" stroke="#0284c7" stroke-width="5" fill="none"/>
+  <path d="M815 245 L798 234 L798 256 Z" fill="#0284c7"/>
+</svg>

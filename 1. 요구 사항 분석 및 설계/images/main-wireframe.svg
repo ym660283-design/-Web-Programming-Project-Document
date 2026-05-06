@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="450" viewBox="0 0 1200 450">
+  <rect width="1200" height="450" fill="#e2edf7"/>
+  <text x="60" y="62" font-family="Arial, sans-serif" font-size="32" font-weight="700" fill="#0f172a">회원가입 / 로그인 화면 설계</text>
+
+  <rect x="70" y="105" width="430" height="280" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="105" y="150" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#0f172a">회원가입</text>
+  <rect x="105" y="180" width="340" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="125" y="205" font-family="Arial, sans-serif" font-size="17" fill="#64748b">아이디 입력 (UNIQUE)</text>
+  <rect x="105" y="230" width="340" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="125" y="255" font-family="Arial, sans-serif" font-size="17" fill="#64748b">비밀번호 입력</text>
+  <rect x="105" y="280" width="160" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="125" y="305" font-family="Arial, sans-serif" font-size="17" fill="#64748b">이름</text>
+  <rect x="285" y="280" width="160" height="38" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="305" y="305" font-family="Arial, sans-serif" font-size="17" fill="#64748b">이메일</text>
+  <rect x="105" y="335" width="340" height="38" rx="6" fill="#0284c7"/>
+  <text x="240" y="360" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">가입</text>
+
+  <rect x="700" y="105" width="430" height="280" rx="12" fill="#ffffff" stroke="#94a3b8" stroke-width="3"/>
+  <text x="735" y="150" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#0f172a">로그인</text>
+  <rect x="735" y="190" width="340" height="42" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="755" y="218" font-family="Arial, sans-serif" font-size="18" fill="#64748b">아이디</text>
+  <rect x="735" y="250" width="340" height="42" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="755" y="278" font-family="Arial, sans-serif" font-size="18" fill="#64748b">비밀번호</text>
+  <rect x="735" y="325" width="340" height="42" rx="6" fill="#0284c7"/>
+  <text x="880" y="352" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#ffffff">로그인</text>
+
+  <path d="M520 245 L660 245" stroke="#0284c7" stroke-width="5" fill="none"/>
+  <path d="M660 245 L640 232 L640 258 Z" fill="#0284c7"/>
+  <text x="540" y="220" font-family="Arial, sans-serif" font-size="18" fill="#334155">계정 생성 후 로그인</text>
+</svg>
