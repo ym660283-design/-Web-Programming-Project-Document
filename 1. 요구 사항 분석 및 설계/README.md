@@ -339,20 +339,6 @@ Trip Planner Web
 
 ---
 
-# 7. 화면 설계
-
-## 화면 설계 이미지 파일
-
-본 문서에 첨부한 화면 설계 이미지는 아래 위치에 저장한다.
-
-```md
-![w:1100 h:400](./images/main-wireframe.svg)
-![w:1100 h:400](./images/trip-list-wireframe.svg)
-![w:1100 h:400](./images/trip-detail-wireframe.svg)
-```
-
----
-
 # 8. 설계 요약
 
 - 본 프로젝트는 여행 일정 공유를 중심으로 사용자 관리, 여행 일정 관리, 날짜별 세부 일정 관리 기능을 제공한다.
