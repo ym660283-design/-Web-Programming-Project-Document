@@ -31,12 +31,12 @@
                            type="text"
                            minlength="4"
                            maxlength="20"
-                           pattern="[A-Za-z0-9]+"
+                           pattern="(?=.*[A-Za-z])[A-Za-z0-9]+"
                            autocomplete="username"
                            aria-describedby="loginIdHelp"
                            required>
-                    <div id="loginIdHelp" class="form-text">영문과 숫자를 사용하여 4~20자로 입력해주세요.</div>
-                    <div class="invalid-feedback">영문과 숫자로 구성된 아이디를 4~20자로 입력해주세요.</div>
+                    <div id="loginIdHelp" class="form-text">영문을 반드시 포함하여 4~20자로 입력해주세요.</div>
+                    <div class="invalid-feedback">영문을 포함한 아이디를 4~20자로 입력해주세요.</div>
                 </div>
 
                 <div class="mb-3">
