@@ -22,9 +22,16 @@
 
   <dependencies>
     <dependency>
+<<<<<<< HEAD
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
       <version>${mysql.connector.version}</version>
+=======
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+>>>>>>> 55c534d6b79d396d061e20e69aa56dec8ca26fb5
     </dependency>
     <dependency>
       <groupId>junit</groupId>
