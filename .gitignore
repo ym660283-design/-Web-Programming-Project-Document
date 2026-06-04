@@ -1,0 +1,5 @@
+# Maven Wrapper 설정
+.mvn/
+
+# Maven 빌드 결과
+target/
