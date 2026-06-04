@@ -1,4 +1,4 @@
-﻿---
+---
 marp: true
 theme: default
 paginate: true
@@ -183,18 +183,19 @@ TripPlannerWeb/
 └── README.md
 ```
 
-| 디렉터리/파일 | 역할 |
-| --- | --- |
-| `pom.xml` | Maven 의존성, 빌드 설정, Java/Tomcat 관련 설정 관리 |
-| `src/main/java/.../controller` | Servlet 클래스 배치, 사용자 요청 처리 및 화면 이동 제어 |
-| `src/main/java/.../dao` | MySQL과 연동하는 JDBC 기반 데이터 접근 로직 관리 |
-| `src/main/java/.../dto` | 사용자, 여행 일정, 세부 일정, 참여자 데이터를 전달하는 객체 관리 |
-| `src/main/java/.../util` | DB 연결, 비밀번호 처리 등 공통 유틸리티 관리 |
-| `src/main/resources` | DB 접속 정보 등 설정 파일 관리 |
-| `src/main/webapp` | 웹 루트 디렉터리, JSP와 정적 리소스 배치 |
-| `src/main/webapp/WEB-INF` | 직접 접근을 막아야 하는 웹 설정 파일 관리 |
-| `src/main/webapp/views` | 기능별 JSP 화면 관리 |
-| `src/main/webapp/assets` | CSS, JavaScript, 이미지 파일 관리 |
+
+| 디렉터리/파일                  | 역할                                                             |
+| -------------------------------- | ------------------------------------------------------------------ |
+| `pom.xml`                      | Maven 의존성, 빌드 설정, Java/Tomcat 관련 설정 관리              |
+| `src/main/java/.../controller` | Servlet 클래스 배치, 사용자 요청 처리 및 화면 이동 제어          |
+| `src/main/java/.../dao`        | MySQL과 연동하는 JDBC 기반 데이터 접근 로직 관리                 |
+| `src/main/java/.../dto`        | 사용자, 여행 일정, 세부 일정, 참여자 데이터를 전달하는 객체 관리 |
+| `src/main/java/.../util`       | DB 연결, 비밀번호 처리 등 공통 유틸리티 관리                     |
+| `src/main/resources`           | DB 접속 정보 등 설정 파일 관리                                   |
+| `src/main/webapp`              | 웹 루트 디렉터리, JSP와 정적 리소스 배치                         |
+| `src/main/webapp/WEB-INF`      | 직접 접근을 막아야 하는 웹 설정 파일 관리                        |
+| `src/main/webapp/views`        | 기능별 JSP 화면 관리                                             |
+| `src/main/webapp/assets`       | CSS, JavaScript, 이미지 파일 관리                                |
 
 ### 1.4 주요 화면 구조
 
@@ -216,15 +217,15 @@ TripPlannerWeb/
 
 #### 메인 화면
 
-![메인 화면 와이어프레임](../1.%20요구%20사항%20분석%20및%20설계/images/main-wireframe.svg)
+![메인 화면 와이어프레임](../docs/images/main-wireframe.svg)
 
 #### 여행 일정 목록 화면
 
-![여행 일정 목록 화면 와이어프레임](../1.%20요구%20사항%20분석%20및%20설계/images/trip-list-wireframe.svg)
+![여행 일정 목록 화면 와이어프레임](../docs/images/trip-list-wireframe.svg)
 
 #### 여행 일정 상세 화면
 
-![여행 일정 상세 화면 와이어프레임](../1.%20요구%20사항%20분석%20및%20설계/images/trip-detail-wireframe.svg)
+![여행 일정 상세 화면 와이어프레임](../docs/images/trip-detail-wireframe.svg)
 
 ### 1.6 데이터베이스 구조
 
