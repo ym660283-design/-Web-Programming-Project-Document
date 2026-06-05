@@ -18,25 +18,41 @@
                     <%= request.getAttribute("errorMessage") %>
                 </div>
             <% } %>
+            <% if ("true".equals(request.getParameter("registered"))) { %>
+                <div class="alert alert-success" role="alert">
+                    회원가입이 완료되었습니다.
+                </div>
+            <% } %>
 
             <form id="registerForm"
                   action="${pageContext.request.contextPath}/register"
                   method="post"
+                  data-check-login-url="${pageContext.request.contextPath}/user/check-login-id"
                   novalidate>
                 <div class="mb-3">
                     <label class="form-label" for="loginId">아이디</label>
-                    <input class="form-control"
-                           id="loginId"
-                           name="login_id"
-                           type="text"
-                           minlength="4"
-                           maxlength="20"
-                           pattern="(?=.*[A-Za-z])[A-Za-z0-9]+"
-                           autocomplete="username"
-                           aria-describedby="loginIdHelp"
-                           required>
+                    <div class="input-group">
+                        <input class="form-control"
+                               id="loginId"
+                               name="login_id"
+                               type="text"
+                               minlength="4"
+                               maxlength="20"
+                               pattern="(?=.*[A-Za-z])[A-Za-z0-9]+"
+                               autocomplete="username"
+                               aria-describedby="loginIdHelp loginIdCheckMessage"
+                               required>
+                        <button class="btn btn-outline-primary"
+                                id="loginIdCheckButton"
+                                type="button">
+                            중복확인
+                        </button>
+                    </div>
                     <div id="loginIdHelp" class="form-text">영문을 반드시 포함하여 4~20자로 입력해주세요.</div>
+                    <div id="loginIdCheckMessage" class="form-text"></div>
                     <div class="invalid-feedback">영문을 포함한 아이디를 4~20자로 입력해주세요.</div>
+                    <input id="loginIdChecked" name="login_id_checked" type="hidden" value="false">
+                    <input id="checkedLoginId" name="checked_login_id" type="hidden" value="">
                 </div>
 
                 <div class="mb-3">
