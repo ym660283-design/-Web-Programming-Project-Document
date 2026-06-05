@@ -1,4 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="kr.hnu.ice.travel.dto.UserDTO" %>
+<%
+    UserDTO headerLoginUser = (UserDTO) session.getAttribute("loginUser");
+%>
 <!doctype html>
 <html lang="ko">
 <head>
@@ -28,12 +32,23 @@
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/views/trip/list.jsp">여행 일정</a>
                 </li>
+                <% if (headerLoginUser == null) { %>
                 <li class="nav-item">
                     <a class="nav-link" href="${pageContext.request.contextPath}/views/user/login.jsp">로그인</a>
                 </li>
                 <li class="nav-item">
                     <a class="btn nav-action" href="${pageContext.request.contextPath}/views/user/register.jsp">회원가입</a>
                 </li>
+                <% } else { %>
+                <li class="nav-item">
+                    <span class="nav-user"><%= headerLoginUser.getUserName() %>님</span>
+                </li>
+                <li class="nav-item">
+                    <form action="${pageContext.request.contextPath}/logout" method="post" class="nav-logout-form">
+                        <button class="btn nav-action" type="submit">로그아웃</button>
+                    </form>
+                </li>
+                <% } %>
             </ul>
         </div>
     </div>

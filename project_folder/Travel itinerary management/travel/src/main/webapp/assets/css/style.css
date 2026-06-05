@@ -68,6 +68,16 @@ body {
     transform: translateY(-1px);
 }
 
+.nav-user {
+    color: var(--ink-light);
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.nav-logout-form {
+    margin: 0;
+}
+
 .site-footer {
     padding: 2.5rem 0;
     background-color: var(--ink);
@@ -98,6 +108,10 @@ body {
     border: 1px solid var(--sand-dark);
     border-radius: 1.25rem;
     box-shadow: 0 1.25rem 3.75rem var(--shadow);
+}
+
+.auth-card-sm {
+    max-width: 480px;
 }
 
 .auth-heading {
@@ -168,6 +182,28 @@ body {
     color: var(--terracotta);
     font-weight: 700;
     text-decoration: none;
+}
+
+.page-section {
+    min-height: calc(100vh - 64px);
+    padding: 5rem 0;
+}
+
+.page-heading {
+    max-width: 720px;
+}
+
+.page-heading h1 {
+    margin-bottom: 0.75rem;
+    font-family: "Playfair Display", serif;
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+}
+
+.page-heading p {
+    color: var(--ink-light);
+    font-size: 1rem;
+    line-height: 1.8;
 }
 
 @media (max-width: 991.98px) {
