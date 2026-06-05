@@ -1,10 +1,6 @@
-<<<<<<< HEAD
-target/
-*.class
-=======
 # Maven Wrapper 설정
 .mvn/
 
 # Maven 빌드 결과
 target/
->>>>>>> 55c534d6b79d396d061e20e69aa56dec8ca26fb5
+*.class
