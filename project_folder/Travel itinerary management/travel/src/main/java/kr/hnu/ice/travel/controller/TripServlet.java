@@ -48,6 +48,7 @@ public class TripServlet extends HttpServlet {
 
         if ("detail".equals(action)) {
             setSampleTrip(request);
+            setSampleSchedule(request);
             request.getRequestDispatcher(DETAIL_VIEW).forward(request, response);
             return;
         }
@@ -85,6 +86,27 @@ public class TripServlet extends HttpServlet {
         request.setAttribute("tripPeriod", "2026.07.15 - 2026.07.18");
         request.setAttribute("tripDuration", "3박 4일");
         request.setAttribute("description", "친구들과 함께 제주의 바다와 맛집을 둘러보는 여행입니다.");
+    }
+
+    private void setSampleSchedule(HttpServletRequest request) {
+        if ("2".equals(request.getParameter("trip_id"))) {
+            request.setAttribute("scheduleDayCount", 2);
+            request.setAttribute("scheduleDate1", "2026-08-08");
+            request.setAttribute("scheduleDateLabel1", "8월 8일 토요일");
+            request.setAttribute("scheduleDate2", "2026-08-09");
+            request.setAttribute("scheduleDateLabel2", "8월 9일 일요일");
+            return;
+        }
+
+        request.setAttribute("scheduleDayCount", 4);
+        request.setAttribute("scheduleDate1", "2026-07-15");
+        request.setAttribute("scheduleDateLabel1", "7월 15일 수요일");
+        request.setAttribute("scheduleDate2", "2026-07-16");
+        request.setAttribute("scheduleDateLabel2", "7월 16일 목요일");
+        request.setAttribute("scheduleDate3", "2026-07-17");
+        request.setAttribute("scheduleDateLabel3", "7월 17일 금요일");
+        request.setAttribute("scheduleDate4", "2026-07-18");
+        request.setAttribute("scheduleDateLabel4", "7월 18일 토요일");
     }
 
     private void setFormAttributes(
