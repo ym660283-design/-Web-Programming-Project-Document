@@ -348,5 +348,5 @@
     </div>
 </section>
 
-<script src="${pageContext.request.contextPath}/assets/js/trip-schedule.js?v=7"></script>
+<script src="${pageContext.request.contextPath}/assets/js/trip.js?v=1"></script>
 <%@ include file="/views/common/footer.jsp" %>
