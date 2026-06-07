@@ -10,6 +10,34 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 public class UserDAO {
+    public boolean existsByLoginId(String loginId) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE login_id = ?";
+
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, loginId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                return resultSet.next() && resultSet.getInt(1) > 0;
+            }
+        }
+    }
+
+    public void insert(UserDTO user) throws SQLException {
+        String sql = "INSERT INTO users (login_id, password, user_name, email) VALUES (?, ?, ?, ?)";
+
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, user.getLoginId());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(3, user.getUserName());
+            preparedStatement.setString(4, user.getEmail());
+            preparedStatement.executeUpdate();
+        }
+    }
+
     public UserDTO findByLoginIdAndPassword(String loginId, String password) throws SQLException {
         String sql = "SELECT user_id, login_id, user_name, email, created_at "
                 + "FROM users WHERE login_id = ? AND password = ?";
