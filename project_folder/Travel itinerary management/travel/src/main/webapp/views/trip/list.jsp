@@ -95,7 +95,7 @@
 
                         <div class="trip-list-actions">
                             <a class="btn trip-outline-button"
-                               href="${pageContext.request.contextPath}/trips?action=detail&trip_id=1">상세보기</a>
+                               href="${pageContext.request.contextPath}/trip-details?trip_id=1">상세보기</a>
                             <a class="btn trip-edit-button"
                                href="${pageContext.request.contextPath}/trips?action=edit&trip_id=1">수정</a>
                         </div>
@@ -119,7 +119,7 @@
 
                         <div class="trip-list-actions">
                             <a class="btn trip-outline-button"
-                               href="${pageContext.request.contextPath}/trips?action=detail&trip_id=2">상세보기</a>
+                               href="${pageContext.request.contextPath}/trip-details?trip_id=2">상세보기</a>
                             <a class="btn trip-edit-button"
                                href="${pageContext.request.contextPath}/trips?action=edit&trip_id=2">수정</a>
                         </div>

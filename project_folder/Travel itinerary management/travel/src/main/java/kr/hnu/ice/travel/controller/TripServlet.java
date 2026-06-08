@@ -11,7 +11,6 @@ import java.io.IOException;
 public class TripServlet extends HttpServlet {
     private static final String LIST_VIEW = "/views/trip/list.jsp";
     private static final String FORM_VIEW = "/views/trip/form.jsp";
-    private static final String DETAIL_VIEW = "/views/trip/detail.jsp";
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -43,12 +42,6 @@ public class TripServlet extends HttpServlet {
                     "수정 내용 저장"
             );
             request.getRequestDispatcher(FORM_VIEW).forward(request, response);
-            return;
-        }
-
-        if ("detail".equals(action)) {
-            setSampleTrip(request);
-            request.getRequestDispatcher(DETAIL_VIEW).forward(request, response);
             return;
         }
 
