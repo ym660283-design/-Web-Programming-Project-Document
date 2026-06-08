@@ -64,6 +64,11 @@ public class UserServlet extends HttpServlet {
             return;
         }
 
+        if ("/user/check-login-id".equals(path)) {
+            checkLoginIdForRegister(request, response);
+            return;
+        }
+
         if ("/register".equals(path)) {
             register(request, response);
             return;
@@ -134,6 +139,8 @@ public class UserServlet extends HttpServlet {
         String loginIdChecked = trim(request.getParameter("login_id_checked"));
         String checkedLoginId = trim(request.getParameter("checked_login_id"));
 
+        setRegistrationFormAttributes(request, loginId, userName, email, loginIdChecked, checkedLoginId);
+
         String validationMessage = validateRegistration(
                 loginId, password, passwordConfirm, userName, email, loginIdChecked, checkedLoginId);
         if (validationMessage != null) {
@@ -143,6 +150,7 @@ public class UserServlet extends HttpServlet {
 
         try {
             if (userDAO.existsByLoginId(loginId)) {
+                setRegistrationFormAttributes(request, loginId, userName, email, "false", "");
                 forwardRegisterError(request, response, "이미 사용 중인 아이디입니다.");
                 return;
             }
@@ -154,10 +162,63 @@ public class UserServlet extends HttpServlet {
             user.setEmail(email);
 
             userDAO.insert(user);
-            response.sendRedirect(request.getContextPath() + REGISTER_VIEW + "?registered=true");
+            response.sendRedirect(request.getContextPath() + "/register?registered=true");
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "회원가입 처리 중 오류가 발생했습니다.");
             request.getRequestDispatcher(REGISTER_VIEW).forward(request, response);
+        }
+    }
+
+    private void checkLoginIdForRegister(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+
+        String loginId = trim(request.getParameter("login_id"));
+        String userName = trim(request.getParameter("user_name"));
+        String email = trim(request.getParameter("email"));
+
+        if (!isValidLoginId(loginId)) {
+            setRegistrationFormAttributes(
+                    request,
+                    loginId,
+                    userName,
+                    email,
+                    "false",
+                    "",
+                    "아이디는 영문을 포함하여 4~20자의 영문과 숫자로 입력해주세요.",
+                    "text-danger"
+            );
+            request.getRequestDispatcher(REGISTER_VIEW).forward(request, response);
+            return;
+        }
+
+        try {
+            if (userDAO.existsByLoginId(loginId)) {
+                setRegistrationFormAttributes(
+                        request,
+                        loginId,
+                        userName,
+                        email,
+                        "false",
+                        "",
+                        "이미 사용 중인 아이디입니다.",
+                        "text-danger"
+                );
+            } else {
+                setRegistrationFormAttributes(
+                        request,
+                        loginId,
+                        userName,
+                        email,
+                        "true",
+                        loginId,
+                        "사용 가능한 아이디입니다.",
+                        "text-success"
+                );
+            }
+            request.getRequestDispatcher(REGISTER_VIEW).forward(request, response);
+        } catch (SQLException e) {
+            setRegistrationFormAttributes(request, loginId, userName, email, "false", "");
+            forwardRegisterError(request, response, "아이디 중복 확인 중 오류가 발생했습니다.");
         }
     }
 
@@ -168,7 +229,7 @@ public class UserServlet extends HttpServlet {
             session.invalidate();
         }
 
-        response.sendRedirect(request.getContextPath() + LOGIN_VIEW + "?logout=1");
+        response.sendRedirect(request.getContextPath() + "/login?logout=1");
     }
 
     private void checkLoginId(HttpServletRequest request, HttpServletResponse response)
@@ -227,6 +288,26 @@ public class UserServlet extends HttpServlet {
             throws IOException, ServletException {
         request.setAttribute("errorMessage", message);
         request.getRequestDispatcher(REGISTER_VIEW).forward(request, response);
+    }
+
+    private void setRegistrationFormAttributes(HttpServletRequest request, String loginId,
+                                               String userName, String email,
+                                               String loginIdChecked, String checkedLoginId) {
+        setRegistrationFormAttributes(
+                request, loginId, userName, email, loginIdChecked, checkedLoginId, "", "");
+    }
+
+    private void setRegistrationFormAttributes(HttpServletRequest request, String loginId,
+                                               String userName, String email,
+                                               String loginIdChecked, String checkedLoginId,
+                                               String loginIdCheckMessage, String loginIdCheckClass) {
+        request.setAttribute("loginId", loginId);
+        request.setAttribute("userName", userName);
+        request.setAttribute("email", email);
+        request.setAttribute("loginIdChecked", loginIdChecked);
+        request.setAttribute("checkedLoginId", checkedLoginId);
+        request.setAttribute("loginIdCheckMessage", loginIdCheckMessage);
+        request.setAttribute("loginIdCheckClass", loginIdCheckClass);
     }
 
     private String trim(String value) {
