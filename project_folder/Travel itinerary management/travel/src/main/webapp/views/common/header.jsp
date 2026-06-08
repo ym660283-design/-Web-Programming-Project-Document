@@ -34,10 +34,10 @@
                 </li>
                 <% if (headerLoginUser == null) { %>
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/views/user/login.jsp">로그인</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/login">로그인</a>
                 </li>
                 <li class="nav-item">
-                    <a class="btn nav-action" href="${pageContext.request.contextPath}/views/user/register.jsp">회원가입</a>
+                    <a class="btn nav-action" href="${pageContext.request.contextPath}/register">회원가입</a>
                 </li>
                 <% } else { %>
                 <li class="nav-item">

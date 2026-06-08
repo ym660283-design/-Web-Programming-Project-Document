@@ -31,7 +31,7 @@ public class LoginRequiredFilter implements Filter {
         boolean loggedIn = session != null && session.getAttribute(SessionNames.LOGIN_USER) != null;
 
         if (!loggedIn) {
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/views/user/login.jsp?required=1");
+            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login?required=1");
             return;
         }
 

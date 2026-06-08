@@ -1,4 +1,18 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%!
+    private String escapeHtml(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.toString()
+                .replace("&", "&amp;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+    }
+%>
 <%
     request.setAttribute("pageTitle", "회원가입");
 %>
@@ -27,7 +41,6 @@
             <form id="registerForm"
                   action="${pageContext.request.contextPath}/register"
                   method="post"
-                  data-check-login-url="${pageContext.request.contextPath}/user/check-login-id"
                   novalidate>
                 <div class="mb-3">
                     <label class="form-label" for="loginId">아이디</label>
@@ -40,19 +53,32 @@
                                maxlength="20"
                                pattern="(?=.*[A-Za-z])[A-Za-z0-9]+"
                                autocomplete="username"
+                               value="<%= escapeHtml(request.getAttribute("loginId")) %>"
                                aria-describedby="loginIdHelp loginIdCheckMessage"
                                required>
                         <button class="btn btn-outline-primary"
                                 id="loginIdCheckButton"
-                                type="button">
+                                type="submit"
+                                formaction="${pageContext.request.contextPath}/user/check-login-id"
+                                formmethod="post"
+                                formnovalidate>
                             중복확인
                         </button>
                     </div>
                     <div id="loginIdHelp" class="form-text">영문을 반드시 포함하여 4~20자로 입력해주세요.</div>
-                    <div id="loginIdCheckMessage" class="form-text"></div>
+                    <div id="loginIdCheckMessage"
+                         class="form-text <%= escapeHtml(request.getAttribute("loginIdCheckClass")) %>">
+                        <%= escapeHtml(request.getAttribute("loginIdCheckMessage")) %>
+                    </div>
                     <div class="invalid-feedback">영문을 포함한 아이디를 4~20자로 입력해주세요.</div>
-                    <input id="loginIdChecked" name="login_id_checked" type="hidden" value="false">
-                    <input id="checkedLoginId" name="checked_login_id" type="hidden" value="">
+                    <input id="loginIdChecked"
+                           name="login_id_checked"
+                           type="hidden"
+                           value="<%= escapeHtml(request.getAttribute("loginIdChecked")) %>">
+                    <input id="checkedLoginId"
+                           name="checked_login_id"
+                           type="hidden"
+                           value="<%= escapeHtml(request.getAttribute("checkedLoginId")) %>">
                 </div>
 
                 <div class="mb-3">
@@ -63,6 +89,7 @@
                            type="text"
                            maxlength="30"
                            autocomplete="name"
+                           value="<%= escapeHtml(request.getAttribute("userName")) %>"
                            required>
                     <div class="invalid-feedback">이름을 입력해주세요.</div>
                 </div>
@@ -75,6 +102,7 @@
                            type="email"
                            maxlength="100"
                            autocomplete="email"
+                           value="<%= escapeHtml(request.getAttribute("email")) %>"
                            required>
                     <div class="invalid-feedback">올바른 이메일 주소를 입력해주세요.</div>
                 </div>
@@ -111,118 +139,10 @@
 
             <p class="auth-link text-center mb-0">
                 이미 계정이 있나요?
-                <a href="${pageContext.request.contextPath}/views/user/login.jsp">로그인</a>
+                <a href="${pageContext.request.contextPath}/login">로그인</a>
             </p>
         </div>
     </div>
 </section>
 
-<script>
-    (function () {
-        var form = document.querySelector("#registerForm");
-
-        if (!form) {
-            return;
-        }
-
-        var loginId = form.querySelector("#loginId");
-        var loginIdChecked = form.querySelector("#loginIdChecked");
-        var checkedLoginId = form.querySelector("#checkedLoginId");
-        var checkLoginButton = form.querySelector("#loginIdCheckButton");
-        var loginIdCheckMessage = form.querySelector("#loginIdCheckMessage");
-        var password = form.querySelector("#password");
-        var passwordConfirm = form.querySelector("#passwordConfirm");
-        var checkLoginUrl = form.getAttribute("data-check-login-url");
-
-        if (!loginId || !loginIdChecked || !checkedLoginId || !checkLoginButton || !loginIdCheckMessage) {
-            return;
-        }
-
-        function resetLoginIdCheck() {
-            loginIdChecked.value = "false";
-            checkedLoginId.value = "";
-        }
-
-        function showLoginIdMessage(message, className) {
-            loginIdCheckMessage.className = ("form-text " + (className || "")).replace(/^\s+|\s+$/g, "");
-            loginIdCheckMessage.textContent = message;
-        }
-
-        function validatePasswordConfirm() {
-            if (!password || !passwordConfirm) {
-                return;
-            }
-
-            var matches = password.value === passwordConfirm.value;
-            passwordConfirm.setCustomValidity(matches ? "" : "비밀번호가 일치하지 않습니다.");
-        }
-
-        checkLoginButton.addEventListener("click", function () {
-            var value = loginId.value.replace(/^\s+|\s+$/g, "");
-
-            resetLoginIdCheck();
-            showLoginIdMessage("아이디를 확인하는 중입니다.", "text-muted");
-
-            var request = new XMLHttpRequest();
-            request.open("GET", checkLoginUrl + "?login_id=" + encodeURIComponent(value), true);
-            request.onreadystatechange = function () {
-                if (request.readyState !== 4) {
-                    return;
-                }
-
-                if (request.status < 200 || request.status >= 300) {
-                    showLoginIdMessage("아이디 중복 확인 중 오류가 발생했습니다.", "text-danger");
-                    return;
-                }
-
-                var result;
-                try {
-                    result = JSON.parse(request.responseText);
-                } catch (error) {
-                    showLoginIdMessage("아이디 중복 확인 중 오류가 발생했습니다.", "text-danger");
-                    return;
-                }
-
-                if (result.available) {
-                    loginIdChecked.value = "true";
-                    checkedLoginId.value = value;
-                    showLoginIdMessage(result.message, "text-success");
-                } else {
-                    showLoginIdMessage(result.message, "text-danger");
-                }
-            };
-            request.send();
-        });
-
-        loginId.addEventListener("input", function () {
-            resetLoginIdCheck();
-            showLoginIdMessage("", "");
-        });
-
-        if (password && passwordConfirm) {
-            password.addEventListener("input", validatePasswordConfirm);
-            passwordConfirm.addEventListener("input", validatePasswordConfirm);
-        }
-
-        form.addEventListener("submit", function (event) {
-            validatePasswordConfirm();
-
-            if (loginIdChecked.value !== "true"
-                    || checkedLoginId.value !== loginId.value.replace(/^\s+|\s+$/g, "")) {
-                event.preventDefault();
-                event.stopPropagation();
-                showLoginIdMessage("아이디 중복확인을 먼저 완료해주세요.", "text-danger");
-                loginId.focus();
-                return;
-            }
-
-            if (typeof form.checkValidity === "function" && !form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            form.classList.add("was-validated");
-        });
-    })();
-</script>
 <%@ include file="/views/common/footer.jsp" %>

@@ -62,11 +62,10 @@
 
             <p class="auth-link text-center mb-0">
                 아직 계정이 없나요?
-                <a href="${pageContext.request.contextPath}/views/user/register.jsp">회원가입</a>
+                <a href="${pageContext.request.contextPath}/register">회원가입</a>
             </p>
         </div>
     </div>
 </section>
 
-<script src="${pageContext.request.contextPath}/assets/js/login.js"></script>
 <%@ include file="/views/common/footer.jsp" %>
