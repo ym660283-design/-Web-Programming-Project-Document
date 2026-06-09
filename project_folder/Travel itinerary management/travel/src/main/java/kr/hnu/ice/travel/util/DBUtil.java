@@ -14,15 +14,14 @@ import java.util.Properties;
 public final class DBUtil {
     private static final String CONFIG_FILE = "db.properties";
     private static final String SCHEMA_FILE = "schema.sql";
+    private static final String SAMPLE_DATA_FILE = "sample_data.sql";
     private static final Properties DB_PROPERTIES = loadProperties();
+    private static volatile boolean databaseInitialized;
 
     static {
         try {
             Class.forName(DB_PROPERTIES.getProperty("db.driver"));
-            initializeDatabase();
         } catch (ClassNotFoundException e) {
-            throw new ExceptionInInitializerError(e);
-        } catch (SQLException e) {
             throw new ExceptionInInitializerError(e);
         }
     }
@@ -31,6 +30,8 @@ public final class DBUtil {
     }
 
     public static Connection getConnection() throws SQLException {
+        ensureDatabaseInitialized();
+
         try {
             return DriverManager.getConnection(
                     DB_PROPERTIES.getProperty("db.url"),
@@ -48,6 +49,19 @@ public final class DBUtil {
                     DB_PROPERTIES.getProperty("db.username"),
                     DB_PROPERTIES.getProperty("db.password")
             );
+        }
+    }
+
+    private static void ensureDatabaseInitialized() throws SQLException {
+        if (databaseInitialized) {
+            return;
+        }
+
+        synchronized (DBUtil.class) {
+            if (!databaseInitialized) {
+                initializeDatabase();
+                databaseInitialized = true;
+            }
         }
     }
 
@@ -74,11 +88,16 @@ public final class DBUtil {
                 DB_PROPERTIES.getProperty("db.password"));
              Statement statement = connection.createStatement()) {
 
-            for (String sql : loadSchema().split(";")) {
-                String trimmedSql = sql.trim();
-                if (!trimmedSql.isEmpty()) {
-                    statement.execute(trimmedSql);
-                }
+            executeSqlFile(statement, SCHEMA_FILE);
+            executeSqlFile(statement, SAMPLE_DATA_FILE);
+        }
+    }
+
+    private static void executeSqlFile(Statement statement, String fileName) throws SQLException {
+        for (String sql : loadSqlFile(fileName).split(";")) {
+            String trimmedSql = sql.trim();
+            if (!trimmedSql.isEmpty()) {
+                statement.execute(trimmedSql);
             }
         }
     }
@@ -100,23 +119,23 @@ public final class DBUtil {
         return e.getErrorCode() == 1049 || "42000".equals(e.getSQLState());
     }
 
-    private static String loadSchema() {
-        try (InputStream inputStream = DBUtil.class.getClassLoader().getResourceAsStream(SCHEMA_FILE)) {
+    private static String loadSqlFile(String fileName) {
+        try (InputStream inputStream = DBUtil.class.getClassLoader().getResourceAsStream(fileName)) {
             if (inputStream == null) {
-                throw new IllegalStateException(SCHEMA_FILE + " not found");
+                throw new IllegalStateException(fileName + " not found");
             }
 
-            StringBuilder schema = new StringBuilder();
+            StringBuilder sqlFile = new StringBuilder();
             try (BufferedReader reader = new BufferedReader(
                     new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    schema.append(line).append('\n');
+                    sqlFile.append(line).append('\n');
                 }
             }
-            return schema.toString();
+            return sqlFile.toString();
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to load " + SCHEMA_FILE, e);
+            throw new IllegalStateException("Failed to load " + fileName, e);
         }
     }
 }
