@@ -1,25 +1,101 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="kr.hnu.ice.travel.dto.TripDetailDTO" %>
+<%!
+    private String escapeHtml(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.toString()
+                .replace("&", "&amp;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+    }
+%>
 <%
     request.setAttribute("pageTitle", "여행 일정 상세");
+
+    List<String> scheduleDates = (List<String>) request.getAttribute("scheduleDates");
+    List<String> scheduleDateLabels = (List<String>) request.getAttribute("scheduleDateLabels");
+    List<TripDetailDTO> selectedScheduleDetails =
+            (List<TripDetailDTO>) request.getAttribute("selectedScheduleDetails");
+    Map<String, Integer> scheduleCounts = (Map<String, Integer>) request.getAttribute("scheduleCounts");
+
+    if (scheduleDates == null) {
+        scheduleDates = Collections.emptyList();
+    }
+    if (scheduleDateLabels == null) {
+        scheduleDateLabels = Collections.emptyList();
+    }
+    if (selectedScheduleDetails == null) {
+        selectedScheduleDetails = Collections.emptyList();
+    }
+    if (scheduleCounts == null) {
+        scheduleCounts = Collections.emptyMap();
+    }
+
+    boolean isOwner = Boolean.TRUE.equals(request.getAttribute("isOwner"));
+    int tripId = ((Integer) request.getAttribute("tripId")).intValue();
+    int selectedDay = request.getAttribute("selectedDay") == null
+            ? 1
+            : ((Integer) request.getAttribute("selectedDay")).intValue();
+    int selectedScheduleCount = selectedScheduleDetails.size();
+    String selectedDateLabel = escapeHtml(request.getAttribute("selectedDateLabel"));
+    String detailFormAction = escapeHtml(request.getAttribute("detailFormAction"));
+    String detailSubmitLabel = escapeHtml(request.getAttribute("detailSubmitLabel"));
+    String detailFormHeading = escapeHtml(request.getAttribute("detailFormHeading"));
+    String detailFormNote = escapeHtml(request.getAttribute("detailFormNote"));
+    String formScheduleDate = escapeHtml(request.getAttribute("formScheduleDate"));
+    String formDetailId = escapeHtml(request.getAttribute("formDetailId"));
+    String formPlaceName = escapeHtml(request.getAttribute("formPlaceName"));
+    String formVisitTime = escapeHtml(request.getAttribute("formVisitTime"));
+    String formCost = escapeHtml(request.getAttribute("formCost"));
+    String formMemo = escapeHtml(request.getAttribute("formMemo"));
 %>
 <%@ include file="/views/common/header.jsp" %>
 
 <section class="page-section trip-section">
     <div class="container">
         <div class="trip-detail-nav">
-            <a href="${pageContext.request.contextPath}/views/trip/list.jsp">여행 일정</a>
+            <a href="${pageContext.request.contextPath}/trips">여행 일정</a>
             <span>/</span>
             <strong>상세보기</strong>
         </div>
 
+        <% if (request.getAttribute("successMessage") != null) { %>
+            <div class="alert alert-success" role="alert">
+                <%= escapeHtml(request.getAttribute("successMessage")) %>
+            </div>
+        <% } %>
+
+        <% if (request.getAttribute("errorMessage") != null) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= escapeHtml(request.getAttribute("errorMessage")) %>
+            </div>
+        <% } %>
+
         <div class="trip-detail-hero">
             <div>
-                <span class="trip-detail-label">${destination}</span>
-                <h1>${tripTitle}</h1>
-                <p>${description}</p>
+                <span class="trip-detail-label"><%= escapeHtml(request.getAttribute("destination")) %></span>
+                <h1><%= escapeHtml(request.getAttribute("tripTitle")) %></h1>
+                <p><%= escapeHtml(request.getAttribute("description")) %></p>
             </div>
-            <a class="btn trip-edit-button"
-               href="${pageContext.request.contextPath}/trips?action=edit&trip_id=${tripId}">일정 수정</a>
+            <% if (isOwner) { %>
+                <div class="trip-detail-actions">
+                    <a class="btn trip-edit-button"
+                       href="${pageContext.request.contextPath}/trips?action=edit&amp;trip_id=<%= tripId %>">일정 수정</a>
+                    <form action="${pageContext.request.contextPath}/trips" method="post">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="trip_id" value="<%= tripId %>">
+                        <button class="btn trip-delete-button" type="submit">일정 삭제</button>
+                    </form>
+                </div>
+            <% } %>
         </div>
 
         <div class="trip-detail-grid">
@@ -29,21 +105,25 @@
                 <dl class="trip-overview-list">
                     <div>
                         <dt>목적지</dt>
-                        <dd>${destination}</dd>
+                        <dd><%= escapeHtml(request.getAttribute("destination")) %></dd>
                     </div>
                     <div>
                         <dt>여행 기간</dt>
-                        <dd>${tripPeriod}</dd>
+                        <dd><%= escapeHtml(request.getAttribute("tripPeriod")) %></dd>
                     </div>
                     <div>
                         <dt>일정</dt>
-                        <dd>${tripDuration}</dd>
+                        <dd><%= escapeHtml(request.getAttribute("tripDuration")) %></dd>
+                    </div>
+                    <div>
+                        <dt>작성자</dt>
+                        <dd><%= escapeHtml(request.getAttribute("ownerName")) %></dd>
                     </div>
                 </dl>
 
                 <div class="trip-overview-description">
                     <span>여행 설명</span>
-                    <p>${description}</p>
+                    <p><%= escapeHtml(request.getAttribute("description")) %></p>
                 </div>
             </aside>
 
@@ -51,302 +131,196 @@
                 <div class="trip-schedule-heading">
                     <div>
                         <span>TRIP SCHEDULE</span>
-                        <h2 id="timelineHeading">DAY 1 일정</h2>
+                        <h2>DAY <%= selectedDay %> 일정</h2>
+                        <small><%= selectedDateLabel %></small>
                     </div>
-                    <span class="trip-schedule-count" id="scheduleCount">3개 일정</span>
+                    <span class="trip-schedule-count"><%= selectedScheduleCount %>개 일정</span>
                 </div>
 
                 <div class="schedule-viewer">
                     <div class="schedule-day-list schedule-day-list-viewer"
-                         id="scheduleViewDayList"
                          role="tablist" aria-label="여행 날짜 선택">
-                        <button class="schedule-day-button active" type="button" role="tab"
-                                data-schedule-day="1" data-schedule-date="${scheduleDate1}"
-                                data-schedule-label="${scheduleDateLabel1}" aria-selected="true">
-                            <span>DAY 1</span>
-                            <strong>${scheduleDateLabel1}</strong>
-                        </button>
-                        <button class="schedule-day-button" type="button" role="tab"
-                                data-schedule-day="2" data-schedule-date="${scheduleDate2}"
-                                data-schedule-label="${scheduleDateLabel2}" aria-selected="false">
-                            <span>DAY 2</span>
-                            <strong>${scheduleDateLabel2}</strong>
-                        </button>
-                        <% if (((Integer) request.getAttribute("scheduleDayCount")) > 2) { %>
-                        <button class="schedule-day-button" type="button" role="tab"
-                                data-schedule-day="3" data-schedule-date="${scheduleDate3}"
-                                data-schedule-label="${scheduleDateLabel3}" aria-selected="false">
-                            <span>DAY 3</span>
-                            <strong>${scheduleDateLabel3}</strong>
-                        </button>
-                        <button class="schedule-day-button" type="button" role="tab"
-                                data-schedule-day="4" data-schedule-date="${scheduleDate4}"
-                                data-schedule-label="${scheduleDateLabel4}" aria-selected="false">
-                            <span>DAY 4</span>
-                            <strong>${scheduleDateLabel4}</strong>
-                        </button>
+                        <% for (int i = 0; i < scheduleDates.size(); i++) {
+                            int day = i + 1;
+                            String activeClass = day == selectedDay ? " active" : "";
+                            Integer dayCount = scheduleCounts.get(scheduleDates.get(i));
+                            int count = dayCount == null ? 0 : dayCount.intValue();
+                        %>
+                            <a class="schedule-day-button<%= activeClass %>" role="tab"
+                               href="${pageContext.request.contextPath}/trip-details?trip_id=<%= tripId %>&amp;day=<%= day %>"
+                               aria-selected="<%= day == selectedDay ? "true" : "false" %>">
+                                <span>DAY <%= day %></span>
+                                <strong><%= escapeHtml(scheduleDateLabels.get(i)) %></strong>
+                                <small><%= count %>개 일정</small>
+                            </a>
                         <% } %>
                     </div>
 
-                    <div class="schedule-timeline" data-day-panel="1">
-                        <article class="schedule-item">
-                            <time>10:00</time>
-                            <div class="schedule-marker" aria-hidden="true"></div>
-                            <div class="schedule-item-content">
-                                <div><span class="schedule-place-type">관광</span><strong>함덕해수욕장</strong></div>
-                                <p>바닷가 산책 후 근처 카페에서 잠시 쉬기</p>
-                                <span class="schedule-cost">예상 비용 10,000원</span>
-                            </div>
-                        </article>
-                        <article class="schedule-item">
-                            <time>13:00</time>
-                            <div class="schedule-marker" aria-hidden="true"></div>
-                            <div class="schedule-item-content">
-                                <div><span class="schedule-place-type">식사</span><strong>동문시장</strong></div>
-                                <p>제주 향토 음식으로 점심 식사</p>
-                                <span class="schedule-cost">예상 비용 25,000원</span>
-                            </div>
-                        </article>
-                        <article class="schedule-item">
-                            <time>16:30</time>
-                            <div class="schedule-marker" aria-hidden="true"></div>
-                            <div class="schedule-item-content">
-                                <div><span class="schedule-place-type">카페</span><strong>해안 카페</strong></div>
-                                <p>노을을 보며 하루 일정 정리</p>
-                                <span class="schedule-cost">예상 비용 12,000원</span>
-                            </div>
-                        </article>
-                    </div>
-
-                    <div class="schedule-empty-day d-none" data-empty-day>
-                        <div class="trip-empty-icon" aria-hidden="true">+</div>
-                        <h3 id="emptyDayHeading">DAY 2 일정이 비어 있습니다</h3>
-                        <p>아직 이 날짜에 등록된 세부 일정이 없습니다.</p>
-                    </div>
+                    <% if (selectedScheduleDetails.isEmpty()) { %>
+                        <div class="schedule-empty-day">
+                            <div class="trip-empty-icon" aria-hidden="true">+</div>
+                            <h3>DAY <%= selectedDay %> 일정이 비어 있습니다</h3>
+                            <p>아직 이 날짜에 등록된 세부 일정이 없습니다.</p>
+                        </div>
+                    <% } else { %>
+                        <div class="schedule-timeline">
+                            <% for (TripDetailDTO detail : selectedScheduleDetails) { %>
+                                <article class="schedule-item">
+                                    <time><%= escapeHtml(detail.getVisitTimeValue()) %></time>
+                                    <div class="schedule-marker" aria-hidden="true"></div>
+                                    <div class="schedule-item-content">
+                                        <div>
+                                            <span class="schedule-place-type">장소</span>
+                                            <strong><%= escapeHtml(detail.getPlaceName()) %></strong>
+                                        </div>
+                                        <p><%= detail.getMemo() == null || detail.getMemo().trim().isEmpty()
+                                                ? "등록된 메모가 없습니다."
+                                                : escapeHtml(detail.getMemo()) %></p>
+                                        <span class="schedule-cost">예상 비용 <%= escapeHtml(detail.getCostText()) %></span>
+                                    </div>
+                                </article>
+                            <% } %>
+                        </div>
+                    <% } %>
                 </div>
             </div>
         </div>
 
+        <% if (isOwner) { %>
         <section class="schedule-manage-card">
-            <button class="schedule-manage-toggle collapsed"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#scheduleManagePanel"
-                    aria-expanded="false"
-                    aria-controls="scheduleManagePanel">
+            <div class="schedule-manage-toggle">
                 <span class="schedule-manage-icon" aria-hidden="true">+</span>
                 <span>
                     <small>EDITOR TOOLS</small>
                     <strong>세부 일정 등록 / 수정 / 삭제</strong>
                     <em>수정 권한이 있는 사용자를 위한 관리 영역입니다.</em>
                 </span>
-                <span class="schedule-manage-arrow" aria-hidden="true">⌄</span>
-            </button>
+            </div>
 
-            <div class="collapse" id="scheduleManagePanel">
-                <div class="schedule-manage-body">
-                    <section class="schedule-form-card schedule-form-card-flat" aria-labelledby="scheduleFormHeading">
-                        <div class="schedule-card-title">
-                            <span>NEW PLAN</span>
-                            <h2 id="scheduleFormHeading">세부 일정 등록 / 수정</h2>
+            <div class="schedule-manage-body">
+                <section class="schedule-form-card schedule-form-card-flat" aria-labelledby="scheduleFormHeading">
+                    <div class="schedule-card-title">
+                        <span>PLAN FORM</span>
+                        <h2 id="scheduleFormHeading"><%= detailFormHeading %></h2>
+                    </div>
+
+                    <form action="${pageContext.request.contextPath}/trip-details" method="post">
+                        <input type="hidden" name="action" value="<%= detailFormAction %>">
+                        <input type="hidden" name="trip_id" value="<%= tripId %>">
+                        <input type="hidden" name="detail_id" value="<%= formDetailId %>">
+
+                        <div class="mb-3">
+                            <label class="form-label" for="scheduleDate">일정 날짜</label>
+                            <select class="form-select" id="scheduleDate" name="schedule_date" required>
+                                <% for (int i = 0; i < scheduleDates.size(); i++) {
+                                    int day = i + 1;
+                                    String dateValue = scheduleDates.get(i);
+                                    String selected = dateValue.equals(formScheduleDate) ? " selected" : "";
+                                %>
+                                    <option value="<%= escapeHtml(dateValue) %>"<%= selected %>>
+                                        DAY <%= day %> - <%= escapeHtml(scheduleDateLabels.get(i)) %>
+                                    </option>
+                                <% } %>
+                            </select>
                         </div>
 
-                        <form>
-                            <input id="scheduleDetailId" type="hidden" name="detail_id" value="">
-                            <div class="mb-3">
-                                <span class="form-label d-block">일정 날짜</span>
-                                <input id="scheduleDate" type="hidden" name="schedule_date" value="${scheduleDate1}">
-                                <div class="dropdown schedule-date-dropdown">
-                                    <button class="schedule-date-dropdown-toggle"
-                                            id="scheduleDateDropdown"
-                                            type="button"
-                                            data-bs-toggle="dropdown"
-                                            aria-expanded="false">
-                                        <span>
-                                            <small id="selectedManageDay">DAY 1</small>
-                                            <strong id="selectedManageDate">${scheduleDateLabel1}</strong>
-                                        </span>
-                                        <span class="schedule-date-dropdown-arrow" aria-hidden="true">⌄</span>
-                                    </button>
+                        <div class="mb-3">
+                            <label class="form-label" for="placeName">
+                                방문 장소 <span class="schedule-required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <input class="form-control" id="placeName" name="place_name" type="text"
+                                   maxlength="100"
+                                   value="<%= formPlaceName %>"
+                                   placeholder="예: 함덕해수욕장"
+                                   required>
+                        </div>
 
-                                    <div class="dropdown-menu schedule-form-day-list"
-                                         id="scheduleManageDayList"
-                                         aria-labelledby="scheduleDateDropdown">
-                                    <button class="dropdown-item schedule-form-day-button active"
-                                            type="button"
-                                            data-form-schedule-day="1"
-                                            data-form-schedule-date="${scheduleDate1}"
-                                            data-form-schedule-label="${scheduleDateLabel1}"
-                                            aria-selected="true">
-                                        <span>DAY 1</span>
-                                        <strong>${scheduleDateLabel1}</strong>
-                                    </button>
-                                    <button class="dropdown-item schedule-form-day-button"
-                                            type="button"
-                                            data-form-schedule-day="2"
-                                            data-form-schedule-date="${scheduleDate2}"
-                                            data-form-schedule-label="${scheduleDateLabel2}"
-                                            aria-selected="false">
-                                        <span>DAY 2</span>
-                                        <strong>${scheduleDateLabel2}</strong>
-                                    </button>
-                                    <% if (((Integer) request.getAttribute("scheduleDayCount")) > 2) { %>
-                                    <button class="dropdown-item schedule-form-day-button"
-                                            type="button"
-                                            data-form-schedule-day="3"
-                                            data-form-schedule-date="${scheduleDate3}"
-                                            data-form-schedule-label="${scheduleDateLabel3}"
-                                            aria-selected="false">
-                                        <span>DAY 3</span>
-                                        <strong>${scheduleDateLabel3}</strong>
-                                    </button>
-                                    <button class="dropdown-item schedule-form-day-button"
-                                            type="button"
-                                            data-form-schedule-day="4"
-                                            data-form-schedule-date="${scheduleDate4}"
-                                            data-form-schedule-label="${scheduleDateLabel4}"
-                                            aria-selected="false">
-                                        <span>DAY 4</span>
-                                        <strong>${scheduleDateLabel4}</strong>
-                                    </button>
-                                    <% } %>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label" for="placeName">
-                                    방문 장소 <span class="schedule-required-mark" aria-hidden="true">*</span>
+                        <div class="row g-3 mb-3">
+                            <div class="col-sm-6">
+                                <label class="form-label" for="visitTime">
+                                    방문 시간 <span class="schedule-required-mark" aria-hidden="true">*</span>
                                 </label>
-                                <input class="form-control" id="placeName" name="place_name" type="text"
-                                       placeholder="예: 함덕해수욕장"
-                                       aria-describedby="placeNameError"
+                                <input class="form-control"
+                                       id="visitTime"
+                                       name="visit_time"
+                                       type="time"
+                                       value="<%= formVisitTime %>"
                                        required>
-                                <div class="invalid-feedback" id="placeNameError">필수 입력 칸입니다.</div>
                             </div>
-                            <div class="row g-3 mb-3">
-                                <div class="col-sm-6">
-                                    <label class="form-label" for="visitTime">
-                                        방문 시간 <span class="schedule-required-mark" aria-hidden="true">*</span>
-                                    </label>
-                                    <input class="form-control"
-                                           id="visitTime"
-                                           name="visit_time"
-                                           type="time"
-                                           aria-describedby="visitTimeError"
-                                           required>
-                                    <div class="invalid-feedback" id="visitTimeError">필수 입력 칸입니다.</div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label class="form-label" for="cost">예상 비용</label>
-                                    <div class="input-group">
-                                        <input class="form-control" id="cost" name="cost" type="number"
-                                               min="0" step="1000" placeholder="0">
-                                        <span class="input-group-text">원</span>
-                                    </div>
+                            <div class="col-sm-6">
+                                <label class="form-label" for="cost">예상 비용</label>
+                                <div class="input-group">
+                                    <input class="form-control" id="cost" name="cost" type="number"
+                                           min="0" step="1000"
+                                           value="<%= formCost %>"
+                                           placeholder="0">
+                                    <span class="input-group-text">원</span>
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="form-label" for="memo">메모</label>
-                                <textarea class="form-control schedule-memo" id="memo" name="memo"
-                                          placeholder="이동 방법이나 예약 정보를 적어보세요."></textarea>
-                            </div>
-                            <div class="schedule-form-actions">
-                                <button class="btn trip-primary-button flex-fill"
-                                        id="scheduleSubmitButton"
-                                        type="button">세부 일정 등록</button>
-                                <button class="btn schedule-edit-cancel-button d-none"
-                                        id="scheduleEditCancel"
-                                        type="button">수정 취소</button>
-                                <button class="btn schedule-reset-button"
-                                        id="scheduleFormReset"
-                                        type="button">입력 초기화</button>
-                            </div>
-                            <p class="schedule-form-note" id="scheduleFormNote">
-                                현재는 화면 예시이며 입력 내용은 저장되지 않습니다.
-                            </p>
-                        </form>
-                    </section>
-
-                    <section class="schedule-manage-list" aria-labelledby="scheduleManageListHeading">
-                        <div class="schedule-timeline-heading">
-                            <div class="schedule-card-title">
-                                <span>MANAGE PLANS</span>
-                                <h2 id="scheduleManageListHeading">DAY 1 등록 일정 관리</h2>
-                            </div>
-                            <span class="schedule-count" id="manageScheduleCount">3개 일정</span>
                         </div>
 
-                        <div class="schedule-manage-items" data-manage-day-panel="1">
-                            <article class="schedule-manage-item">
-                                <div>
-                                    <time>10:00</time>
-                                    <strong>함덕해수욕장</strong>
-                                    <span>관광 · 10,000원</span>
-                                </div>
-                                <div class="schedule-manage-actions">
-                                    <button class="btn trip-edit-button"
-                                            type="button"
-                                            data-edit-schedule
-                                            data-detail-id="1"
-                                            data-day="1"
-                                            data-place="함덕해수욕장"
-                                            data-time="10:00"
-                                            data-cost="10000"
-                                            data-memo="바닷가 산책 후 근처 카페에서 잠시 쉬기">수정</button>
-                                    <button class="btn schedule-delete-button" type="button">삭제</button>
-                                </div>
-                            </article>
-                            <article class="schedule-manage-item">
-                                <div>
-                                    <time>13:00</time>
-                                    <strong>동문시장</strong>
-                                    <span>식사 · 25,000원</span>
-                                </div>
-                                <div class="schedule-manage-actions">
-                                    <button class="btn trip-edit-button"
-                                            type="button"
-                                            data-edit-schedule
-                                            data-detail-id="2"
-                                            data-day="1"
-                                            data-place="동문시장"
-                                            data-time="13:00"
-                                            data-cost="25000"
-                                            data-memo="제주 향토 음식으로 점심 식사">수정</button>
-                                    <button class="btn schedule-delete-button" type="button">삭제</button>
-                                </div>
-                            </article>
-                            <article class="schedule-manage-item">
-                                <div>
-                                    <time>16:30</time>
-                                    <strong>해안 카페</strong>
-                                    <span>카페 · 12,000원</span>
-                                </div>
-                                <div class="schedule-manage-actions">
-                                    <button class="btn trip-edit-button"
-                                            type="button"
-                                            data-edit-schedule
-                                            data-detail-id="3"
-                                            data-day="1"
-                                            data-place="해안 카페"
-                                            data-time="16:30"
-                                            data-cost="12000"
-                                            data-memo="노을을 보며 하루 일정 정리">수정</button>
-                                    <button class="btn schedule-delete-button" type="button">삭제</button>
-                                </div>
-                            </article>
+                        <div class="mb-4">
+                            <label class="form-label" for="memo">메모</label>
+                            <textarea class="form-control schedule-memo" id="memo" name="memo"
+                                      placeholder="이동 방법이나 예약 정보를 적어보세요."><%= formMemo %></textarea>
                         </div>
 
-                        <div class="schedule-manage-empty d-none" data-manage-empty>
+                        <div class="schedule-form-actions">
+                            <button class="btn trip-primary-button" type="submit"><%= detailSubmitLabel %></button>
+                            <% if ("updateDetail".equals(request.getAttribute("detailFormAction"))) { %>
+                                <a class="btn schedule-edit-cancel-button"
+                                   href="${pageContext.request.contextPath}/trip-details?trip_id=<%= tripId %>&amp;day=<%= selectedDay %>">수정 취소</a>
+                            <% } %>
+                            <button class="btn schedule-reset-button" type="reset">입력 초기화</button>
+                        </div>
+                        <p class="schedule-form-note"><%= detailFormNote %></p>
+                    </form>
+                </section>
+
+                <section class="schedule-manage-list" aria-labelledby="scheduleManageListHeading">
+                    <div class="schedule-timeline-heading">
+                        <div class="schedule-card-title">
+                            <span>MANAGE PLANS</span>
+                            <h2 id="scheduleManageListHeading">DAY <%= selectedDay %> 등록 일정 관리</h2>
+                        </div>
+                        <span class="schedule-count"><%= selectedScheduleCount %>개 일정</span>
+                    </div>
+
+                    <% if (selectedScheduleDetails.isEmpty()) { %>
+                        <div class="schedule-manage-empty">
                             <div class="trip-empty-icon" aria-hidden="true">+</div>
-                            <h3 id="manageEmptyHeading">DAY 2에 등록된 일정이 없습니다</h3>
-                            <p>상단에서 선택한 날짜에 등록된 일정이 여기에 표시됩니다.</p>
+                            <h3>DAY <%= selectedDay %>에 등록된 일정이 없습니다</h3>
+                            <p>왼쪽 폼에서 이 날짜의 세부 일정을 등록하세요.</p>
                         </div>
-                    </section>
-                </div>
+                    <% } else { %>
+                        <div class="schedule-manage-items">
+                            <% for (TripDetailDTO detail : selectedScheduleDetails) { %>
+                                <article class="schedule-manage-item">
+                                    <div>
+                                        <time><%= escapeHtml(detail.getVisitTimeValue()) %></time>
+                                        <strong><%= escapeHtml(detail.getPlaceName()) %></strong>
+                                        <span><%= escapeHtml(detail.getMemo()) %> · <%= escapeHtml(detail.getCostText()) %></span>
+                                    </div>
+                                    <div class="schedule-manage-actions">
+                                        <a class="btn trip-edit-button"
+                                           href="${pageContext.request.contextPath}/trip-details?trip_id=<%= tripId %>&amp;day=<%= selectedDay %>&amp;action=editDetail&amp;detail_id=<%= detail.getDetailId() %>">수정</a>
+                                        <form action="${pageContext.request.contextPath}/trip-details" method="post">
+                                            <input type="hidden" name="action" value="deleteDetail">
+                                            <input type="hidden" name="trip_id" value="<%= tripId %>">
+                                            <input type="hidden" name="detail_id" value="<%= detail.getDetailId() %>">
+                                            <input type="hidden" name="day" value="<%= selectedDay %>">
+                                            <button class="btn schedule-delete-button" type="submit">삭제</button>
+                                        </form>
+                                    </div>
+                                </article>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </section>
             </div>
         </section>
+        <% } %>
     </div>
 </section>
 
-<script src="${pageContext.request.contextPath}/assets/js/trip.js?v=1"></script>
 <%@ include file="/views/common/footer.jsp" %>

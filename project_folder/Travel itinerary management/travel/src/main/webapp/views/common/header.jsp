@@ -30,7 +30,7 @@
         <div class="collapse navbar-collapse" id="mainNavigation">
             <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
                 <li class="nav-item">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/views/trip/list.jsp">여행 일정</a>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/trips">여행 일정</a>
                 </li>
                 <% if (headerLoginUser == null) { %>
                 <li class="nav-item">

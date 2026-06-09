@@ -20,11 +20,23 @@ import java.util.regex.Pattern;
 public class UserServlet extends HttpServlet {
     private static final String LOGIN_VIEW = "/views/user/login.jsp";
     private static final String REGISTER_VIEW = "/views/user/register.jsp";
-    private static final String TRIP_LIST_VIEW = "/views/trip/list.jsp";
+    private static final String TRIP_LIST_PATH = "/trips";
     private static final Pattern LOGIN_ID_PATTERN = Pattern.compile("(?=.*[A-Za-z])[A-Za-z0-9]{4,20}");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
 
     private final UserDAO userDAO = new UserDAO();
+
+    public static UserDTO getLoginUser(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        return (UserDTO) session.getAttribute(SessionNames.LOGIN_USER);
+    }
+
+    public static void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendRedirect(request.getContextPath() + "/login?required=1");
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -83,7 +95,7 @@ public class UserServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute(SessionNames.LOGIN_USER) != null) {
-            response.sendRedirect(request.getContextPath() + TRIP_LIST_VIEW);
+            response.sendRedirect(request.getContextPath() + TRIP_LIST_PATH);
             return;
         }
 
@@ -97,7 +109,7 @@ public class UserServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute(SessionNames.LOGIN_USER) != null) {
-            response.sendRedirect(request.getContextPath() + TRIP_LIST_VIEW);
+            response.sendRedirect(request.getContextPath() + TRIP_LIST_PATH);
             return;
         }
 
@@ -121,7 +133,7 @@ public class UserServlet extends HttpServlet {
             }
 
             request.getSession(true).setAttribute(SessionNames.LOGIN_USER, loginUser);
-            response.sendRedirect(request.getContextPath() + TRIP_LIST_VIEW);
+            response.sendRedirect(request.getContextPath() + TRIP_LIST_PATH);
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "로그인 처리 중 오류가 발생했습니다.");
             request.getRequestDispatcher(LOGIN_VIEW).forward(request, response);

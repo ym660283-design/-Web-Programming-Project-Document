@@ -1,8 +1,26 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.util.List" %>
+<%@ page import="kr.hnu.ice.travel.dto.TripDTO" %>
 <%@ page import="kr.hnu.ice.travel.dto.UserDTO" %>
+<%!
+    private String escapeHtml(Object value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.toString()
+                .replace("&", "&amp;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;");
+    }
+%>
 <%
     request.setAttribute("pageTitle", "여행 일정");
     UserDTO loginUser = (UserDTO) session.getAttribute("loginUser");
+    List<TripDTO> trips = (List<TripDTO>) request.getAttribute("trips");
+    int tripCount = trips == null ? 0 : trips.size();
 %>
 <%@ include file="/views/common/header.jsp" %>
 
@@ -13,7 +31,7 @@
                 <h1>여행 일정</h1>
                 <p>
                     <% if (loginUser != null) { %>
-                        <%= loginUser.getUserName() %>님의 여행 계획을 확인하고 관리하세요.
+                        <%= escapeHtml(loginUser.getUserName()) %>님의 여행 계획을 확인하고 관리하세요.
                     <% } else { %>
                         여행 계획을 확인하고 관리하세요.
                     <% } %>
@@ -26,107 +44,69 @@
             </a>
         </div>
 
-        <div class="trip-tabs" role="tablist" aria-label="여행 일정 구분">
-            <button class="trip-tab active"
-                    id="myTripsTab"
-                    type="button"
-                    role="tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#myTrips"
-                    aria-controls="myTrips"
-                    aria-selected="true">
-                내 여행 일정
-                <span>0</span>
-            </button>
-            <button class="trip-tab"
-                    id="sampleTripsTab"
-                    type="button"
-                    role="tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#sampleTrips"
-                    aria-controls="sampleTrips"
-                    aria-selected="false">
-                예시 일정
-                <span>2</span>
-            </button>
+        <% if (request.getAttribute("successMessage") != null) { %>
+            <div class="alert alert-success" role="alert">
+                <%= escapeHtml(request.getAttribute("successMessage")) %>
+            </div>
+        <% } %>
+
+        <% if (request.getAttribute("errorMessage") != null) { %>
+            <div class="alert alert-danger" role="alert">
+                <%= escapeHtml(request.getAttribute("errorMessage")) %>
+            </div>
+        <% } %>
+
+        <div class="trip-list-summary">
+            내 여행 일정 <strong><%= tripCount %></strong>개
         </div>
 
-        <div class="tab-content">
-            <div class="tab-pane fade show active"
-                 id="myTrips"
-                 role="tabpanel"
-                 aria-labelledby="myTripsTab"
-                 tabindex="0">
-                <%-- DB 연동 후 실제 여행 일정 반복 출력 영역 --%>
-                <div class="trip-empty-list">
-                    <div class="trip-empty-list-icon" aria-hidden="true">+</div>
-                    <h2>등록된 여행 일정이 없습니다</h2>
-                    <p>새 여행 일정 생성 버튼을 눌러 첫 여행 계획을 만들어보세요.</p>
-                    <a class="btn trip-primary-button"
-                       href="${pageContext.request.contextPath}/trips?action=create">여행 일정 생성</a>
-                </div>
+        <% if (tripCount == 0) { %>
+            <div class="trip-empty-list">
+                <div class="trip-empty-list-icon" aria-hidden="true">+</div>
+                <h2>등록된 여행 일정이 없습니다</h2>
+                <p>새 여행 일정 생성 버튼을 눌러 첫 여행 계획을 만들어보세요.</p>
+                <a class="btn trip-primary-button"
+                   href="${pageContext.request.contextPath}/trips?action=create">여행 일정 생성</a>
             </div>
-
-            <div class="tab-pane fade"
-                 id="sampleTrips"
-                 role="tabpanel"
-                 aria-labelledby="sampleTripsTab"
-                 tabindex="0">
-                <div class="trip-sample-notice">
-                    화면 구성을 확인하기 위한 예시 데이터입니다. 실제 일정과 별도로 표시됩니다.
-                </div>
-
-                <div class="trip-list">
+        <% } else { %>
+            <div class="trip-list">
+                <% for (TripDTO trip : trips) { %>
                     <article class="trip-list-item">
-                        <div class="trip-date-box" aria-label="여행 시작일 7월 15일">
-                            <span>JUL</span>
-                            <strong>15</strong>
-                            <small>2026</small>
+                        <div class="trip-date-box" aria-label="여행 시작일 <%= escapeHtml(trip.getStartDateValue()) %>">
+                            <span><%= escapeHtml(trip.getStartMonthShort()) %></span>
+                            <strong><%= escapeHtml(trip.getStartDayString()) %></strong>
+                            <small><%= trip.getStartYear() %></small>
                         </div>
 
                         <div class="trip-list-content">
                             <div class="trip-list-meta">
-                                <span class="trip-location">제주도</span>
-                                <span class="trip-period">2026.07.15 - 2026.07.18</span>
+                                <span class="trip-location"><%= escapeHtml(trip.getDestination()) %></span>
+                                <span class="trip-period"><%= escapeHtml(trip.getTripPeriod()) %></span>
+                                <% if (!trip.isOwner()) { %>
+                                    <span class="trip-owner">작성자 <%= escapeHtml(trip.getOwnerName()) %></span>
+                                <% } %>
                             </div>
-                            <h2>제주도 여름 여행</h2>
-                            <p>친구들과 함께 제주의 바다와 맛집을 둘러보는 여행입니다.</p>
+                            <h2><%= escapeHtml(trip.getTripTitle()) %></h2>
+                            <p><%= escapeHtml(trip.getDescription()) %></p>
                         </div>
 
                         <div class="trip-list-actions">
                             <a class="btn trip-outline-button"
-                               href="${pageContext.request.contextPath}/trip-details?trip_id=1">상세보기</a>
-                            <a class="btn trip-edit-button"
-                               href="${pageContext.request.contextPath}/trips?action=edit&trip_id=1">수정</a>
+                               href="${pageContext.request.contextPath}/trip-details?trip_id=<%= trip.getTripId() %>">상세보기</a>
+                            <% if (trip.isOwner()) { %>
+                                <a class="btn trip-edit-button"
+                                   href="${pageContext.request.contextPath}/trips?action=edit&trip_id=<%= trip.getTripId() %>">수정</a>
+                                <form action="${pageContext.request.contextPath}/trips" method="post">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="trip_id" value="<%= trip.getTripId() %>">
+                                    <button class="btn trip-delete-button" type="submit">삭제</button>
+                                </form>
+                            <% } %>
                         </div>
                     </article>
-
-                    <article class="trip-list-item">
-                        <div class="trip-date-box trip-date-box-dark" aria-label="여행 시작일 8월 8일">
-                            <span>AUG</span>
-                            <strong>08</strong>
-                            <small>2026</small>
-                        </div>
-
-                        <div class="trip-list-content">
-                            <div class="trip-list-meta">
-                                <span class="trip-location">부산</span>
-                                <span class="trip-period">2026.08.08 - 2026.08.09</span>
-                            </div>
-                            <h2>부산 주말 여행</h2>
-                            <p>해운대와 광안리를 중심으로 여유롭게 즐기는 주말 일정입니다.</p>
-                        </div>
-
-                        <div class="trip-list-actions">
-                            <a class="btn trip-outline-button"
-                               href="${pageContext.request.contextPath}/trip-details?trip_id=2">상세보기</a>
-                            <a class="btn trip-edit-button"
-                               href="${pageContext.request.contextPath}/trips?action=edit&trip_id=2">수정</a>
-                        </div>
-                    </article>
-                </div>
+                <% } %>
             </div>
-        </div>
+        <% } %>
     </div>
 </section>
 

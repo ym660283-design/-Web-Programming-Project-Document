@@ -148,14 +148,16 @@ body {
     font-weight: 700;
 }
 
-.form-control {
+.form-control,
+.form-select {
     min-height: 48px;
     border-color: var(--sand-dark);
     border-radius: 0.75rem;
     background-color: #fff;
 }
 
-.form-control:focus {
+.form-control:focus,
+.form-select:focus {
     border-color: var(--terracotta);
     box-shadow: 0 0 0 0.2rem rgba(196, 105, 79, 0.15);
 }
@@ -219,7 +221,8 @@ body {
 .trip-primary-button,
 .trip-outline-button,
 .trip-edit-button,
-.trip-cancel-button {
+.trip-cancel-button,
+.trip-delete-button {
     padding: 0.68rem 1.15rem;
     border-radius: 0.65rem;
     font-size: 0.84rem;
@@ -296,6 +299,17 @@ body {
     color: var(--terracotta);
     font-size: 0.7rem;
     font-weight: 700;
+}
+
+.trip-list-summary {
+    margin-bottom: 1rem;
+    color: #746b65;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.trip-list-summary strong {
+    color: var(--terracotta);
 }
 
 .trip-empty-list {
@@ -435,6 +449,11 @@ body {
     font-size: 0.78rem;
 }
 
+.trip-owner {
+    color: #746b65;
+    font-size: 0.78rem;
+}
+
 .trip-list-content h2 {
     margin-bottom: 0.5rem;
     font-family: "Playfair Display", "Noto Sans KR", serif;
@@ -463,6 +482,10 @@ body {
     width: 100%;
 }
 
+.trip-list-actions form {
+    margin: 0;
+}
+
 .trip-outline-button {
     border-color: var(--terracotta);
     color: var(--terracotta);
@@ -486,6 +509,19 @@ body {
 .trip-cancel-button:hover {
     border-color: var(--ink);
     background-color: var(--ink);
+    color: #fff;
+}
+
+.trip-delete-button {
+    border-color: rgba(190, 18, 60, 0.22);
+    background-color: rgba(190, 18, 60, 0.08);
+    color: #9f1239;
+}
+
+.trip-delete-button:hover,
+.trip-delete-button:focus {
+    border-color: #9f1239;
+    background-color: #9f1239;
     color: #fff;
 }
 
@@ -571,10 +607,33 @@ body {
     color: #fff;
 }
 
+.trip-detail-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 0.5rem;
+}
+
+.trip-detail-actions form {
+    margin: 0;
+}
+
+.trip-detail-hero .trip-delete-button {
+    border-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(190, 18, 60, 0.72);
+    color: #fff;
+}
+
 .trip-detail-hero .trip-edit-button:hover {
     border-color: #fff;
     background-color: #fff;
     color: var(--ink);
+}
+
+.trip-detail-hero .trip-delete-button:hover,
+.trip-detail-hero .trip-delete-button:focus {
+    border-color: #fff;
+    background-color: #fff;
+    color: #9f1239;
 }
 
 .trip-detail-grid {
@@ -657,6 +716,14 @@ body {
     font-size: 0.65rem;
     font-weight: 700;
     letter-spacing: 0.12em;
+}
+
+.trip-schedule-heading small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #8a7f77;
+    font-size: 0.72rem;
+    font-weight: 700;
 }
 
 .trip-schedule-count {
@@ -782,6 +849,7 @@ body {
     background-color: var(--sand);
     color: var(--ink);
     text-align: left;
+    text-decoration: none;
     transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
 }
 
@@ -796,6 +864,12 @@ body {
     font-size: 0.8rem;
 }
 
+.schedule-day-button small {
+    color: #8a7f77;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
 .schedule-day-button:hover,
 .schedule-day-button.active {
     border-color: var(--terracotta);
@@ -804,7 +878,9 @@ body {
 }
 
 .schedule-day-button:hover span,
-.schedule-day-button.active span {
+.schedule-day-button.active span,
+.schedule-day-button:hover small,
+.schedule-day-button.active small {
     color: rgba(255, 255, 255, 0.72);
 }
 
@@ -1257,9 +1333,14 @@ body {
     gap: 0.4rem;
 }
 
+.schedule-manage-actions form {
+    margin: 0;
+}
+
 .schedule-manage-actions .btn {
     padding: 0.45rem 0.7rem;
     font-size: 0.7rem;
+    white-space: nowrap;
 }
 
 .schedule-delete-button {
@@ -1300,6 +1381,9 @@ body {
 }
 
 .schedule-edit-cancel-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 0.68rem 1rem;
     border-color: var(--sand-dark);
     border-radius: 0.65rem;
@@ -1307,6 +1391,7 @@ body {
     color: var(--ink);
     font-size: 0.8rem;
     font-weight: 700;
+    text-decoration: none;
 }
 
 .schedule-edit-cancel-button:hover {
@@ -1429,6 +1514,13 @@ body {
         padding: 1.5rem;
     }
 
+    .trip-detail-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .trip-detail-actions .btn,
+    .trip-detail-actions form,
     .trip-detail-hero .trip-edit-button {
         width: 100%;
     }
