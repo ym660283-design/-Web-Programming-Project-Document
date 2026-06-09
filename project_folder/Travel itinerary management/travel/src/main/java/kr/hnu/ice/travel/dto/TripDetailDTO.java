@@ -1,5 +1,6 @@
 package kr.hnu.ice.travel.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -15,6 +16,8 @@ public class TripDetailDTO {
     private String memo;
     private int cost;
     private int sortOrder;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
 
     public int getDetailId() {
         return detailId;
@@ -80,6 +83,22 @@ public class TripDetailDTO {
         this.sortOrder = sortOrder;
     }
 
+    public BigDecimal getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(BigDecimal latitude) {
+        this.latitude = latitude;
+    }
+
+    public BigDecimal getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(BigDecimal longitude) {
+        this.longitude = longitude;
+    }
+
     public String getScheduleDateValue() {
         return scheduleDate == null ? "" : scheduleDate.toString();
     }
@@ -90,5 +109,17 @@ public class TripDetailDTO {
 
     public String getCostText() {
         return String.format("%,d원", cost);
+    }
+
+    public String getLatitudeValue() {
+        return latitude == null ? "" : latitude.stripTrailingZeros().toPlainString();
+    }
+
+    public String getLongitudeValue() {
+        return longitude == null ? "" : longitude.stripTrailingZeros().toPlainString();
+    }
+
+    public boolean hasLocation() {
+        return latitude != null && longitude != null;
     }
 }

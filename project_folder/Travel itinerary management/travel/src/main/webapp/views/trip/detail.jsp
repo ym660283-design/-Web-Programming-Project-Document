@@ -56,6 +56,12 @@
     String formVisitTime = escapeHtml(request.getAttribute("formVisitTime"));
     String formCost = escapeHtml(request.getAttribute("formCost"));
     String formMemo = escapeHtml(request.getAttribute("formMemo"));
+    String formLatitude = escapeHtml(request.getAttribute("formLatitude"));
+    String formLongitude = escapeHtml(request.getAttribute("formLongitude"));
+    String kakaoMapAppKey = application.getInitParameter("kakaoMapAppKey");
+    boolean hasKakaoMapKey = kakaoMapAppKey != null
+            && !kakaoMapAppKey.trim().isEmpty()
+            && !"YOUR_KAKAO_JAVASCRIPT_KEY".equals(kakaoMapAppKey.trim());
 %>
 <%@ include file="/views/common/header.jsp" %>
 
@@ -176,7 +182,12 @@
                                         <p><%= detail.getMemo() == null || detail.getMemo().trim().isEmpty()
                                                 ? "등록된 메모가 없습니다."
                                                 : escapeHtml(detail.getMemo()) %></p>
-                                        <span class="schedule-cost">예상 비용 <%= escapeHtml(detail.getCostText()) %></span>
+                                        <div class="schedule-item-meta">
+                                            <span class="schedule-cost">예상 비용 <%= escapeHtml(detail.getCostText()) %></span>
+                                            <span class="schedule-location-badge<%= detail.hasLocation() ? "" : " muted" %>">
+                                                <%= detail.hasLocation() ? "위치 저장됨" : "위치 미등록" %>
+                                            </span>
+                                        </div>
                                     </div>
                                 </article>
                             <% } %>
@@ -185,6 +196,47 @@
                 </div>
             </div>
         </div>
+
+        <section class="trip-map-card" aria-labelledby="tripMapHeading">
+            <div class="trip-map-heading">
+                <div>
+                    <span>LOCATION MAP</span>
+                    <h2 id="tripMapHeading">DAY <%= selectedDay %> 장소 지도</h2>
+                    <small><%= selectedDateLabel %>에 위치가 저장된 장소를 표시합니다.</small>
+                </div>
+                <span class="trip-map-count">마커 <span data-trip-map-marker-count>0</span>개</span>
+            </div>
+
+            <div class="trip-map-shell">
+                <div id="tripMap"
+                     class="trip-map-canvas"
+                     data-map-ready="<%= hasKakaoMapKey ? "true" : "false" %>"
+                     data-destination="<%= escapeHtml(request.getAttribute("destination")) %>"></div>
+                <div class="trip-map-message" data-trip-map-message>
+                    <% if (hasKakaoMapKey) { %>
+                        위치가 저장된 세부 일정이 없으면 마커가 표시되지 않습니다.
+                    <% } else { %>
+                        Kakao JavaScript 키를 설정하면 지도가 표시됩니다.
+                    <% } %>
+                </div>
+            </div>
+
+            <div id="tripMapMarkers" hidden>
+                <% for (TripDetailDTO detail : selectedScheduleDetails) {
+                    if (!detail.hasLocation()) {
+                        continue;
+                    }
+                %>
+                    <div class="trip-map-marker-data"
+                         data-place="<%= escapeHtml(detail.getPlaceName()) %>"
+                         data-time="<%= escapeHtml(detail.getVisitTimeValue()) %>"
+                         data-memo="<%= escapeHtml(detail.getMemo()) %>"
+                         data-cost="<%= escapeHtml(detail.getCostText()) %>"
+                         data-lat="<%= escapeHtml(detail.getLatitudeValue()) %>"
+                         data-lng="<%= escapeHtml(detail.getLongitudeValue()) %>"></div>
+                <% } %>
+            </div>
+        </section>
 
         <% if (isOwner) { %>
         <section class="schedule-manage-card">
@@ -233,6 +285,44 @@
                                    value="<%= formPlaceName %>"
                                    placeholder="예: 함덕해수욕장"
                                    required>
+                        </div>
+
+                        <div class="schedule-location-panel"
+                             data-location-panel
+                             data-destination="<%= escapeHtml(request.getAttribute("destination")) %>"
+                             data-map-ready="<%= hasKakaoMapKey ? "true" : "false" %>">
+                            <div class="schedule-location-header">
+                                <label class="form-label mb-0" for="locationSearchButton">위치 정보</label>
+                                <button class="btn schedule-location-button"
+                                        id="locationSearchButton"
+                                        type="button">
+                                    장소 위치 찾기
+                                </button>
+                            </div>
+                            <p class="schedule-location-status" data-location-status>
+                                위치를 선택하면 위도와 경도가 함께 저장됩니다.
+                            </p>
+                            <div class="schedule-location-results" data-location-results hidden></div>
+                            <div class="row g-2">
+                                <div class="col-sm-6">
+                                    <input class="form-control form-control-sm"
+                                           id="latitude"
+                                           name="latitude"
+                                           type="text"
+                                           value="<%= formLatitude %>"
+                                           placeholder="위도"
+                                           readonly>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input class="form-control form-control-sm"
+                                           id="longitude"
+                                           name="longitude"
+                                           type="text"
+                                           value="<%= formLongitude %>"
+                                           placeholder="경도"
+                                           readonly>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row g-3 mb-3">
@@ -299,7 +389,11 @@
                                     <div>
                                         <time><%= escapeHtml(detail.getVisitTimeValue()) %></time>
                                         <strong><%= escapeHtml(detail.getPlaceName()) %></strong>
-                                        <span><%= escapeHtml(detail.getMemo()) %> · <%= escapeHtml(detail.getCostText()) %></span>
+                                        <span>
+                                            <%= escapeHtml(detail.getMemo()) %> ·
+                                            <%= escapeHtml(detail.getCostText()) %> ·
+                                            <%= detail.hasLocation() ? "위치 저장됨" : "위치 미등록" %>
+                                        </span>
                                     </div>
                                     <div class="schedule-manage-actions">
                                         <a class="btn trip-edit-button"
@@ -322,5 +416,10 @@
         <% } %>
     </div>
 </section>
+
+<% if (hasKakaoMapKey) { %>
+<script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=<%= escapeHtml(kakaoMapAppKey.trim()) %>&amp;libraries=services&amp;autoload=false"></script>
+<% } %>
+<script src="${pageContext.request.contextPath}/assets/js/trip.js"></script>
 
 <%@ include file="/views/common/footer.jsp" %>

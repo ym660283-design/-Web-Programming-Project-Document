@@ -7,4 +7,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd">
   <display-name>Archetype Created Web Application</display-name>
+  <context-param>
+    <param-name>kakaoMapAppKey</param-name>
+    <param-value>5f31fd080186ab6f02c1a615b6007751</param-value>
+  </context-param>
 </web-app>

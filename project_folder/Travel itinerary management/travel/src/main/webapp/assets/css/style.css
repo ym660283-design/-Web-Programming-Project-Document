@@ -936,6 +936,106 @@ body {
     resize: vertical;
 }
 
+.schedule-location-panel {
+    margin-bottom: 1rem;
+    padding: 0.9rem;
+    border: 1px solid var(--sand-dark);
+    border-radius: 0.75rem;
+    background-color: rgba(245, 240, 232, 0.55);
+}
+
+.schedule-location-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.55rem;
+}
+
+.schedule-location-button {
+    padding: 0.45rem 0.7rem;
+    border-color: var(--terracotta);
+    border-radius: 0.55rem;
+    color: var(--terracotta);
+    font-size: 0.7rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.schedule-location-button:hover,
+.schedule-location-button:focus {
+    border-color: var(--terracotta);
+    background-color: var(--terracotta);
+    color: #fff;
+}
+
+.schedule-location-button:disabled {
+    border-color: var(--sand-dark);
+    background-color: var(--sand);
+    color: #8a7f77;
+}
+
+.schedule-location-status {
+    margin: 0 0 0.6rem;
+    color: #8a7f77;
+    font-size: 0.68rem;
+    line-height: 1.5;
+}
+
+.schedule-location-status[data-tone="success"] {
+    color: #15803d;
+    font-weight: 700;
+}
+
+.schedule-location-status[data-tone="warning"] {
+    color: #ad3f2d;
+    font-weight: 700;
+}
+
+.schedule-location-results {
+    display: grid;
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+}
+
+.schedule-location-results[hidden] {
+    display: none;
+}
+
+.schedule-location-result {
+    display: flex;
+    flex-direction: column;
+    gap: 0.12rem;
+    width: 100%;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--sand-dark);
+    border-radius: 0.55rem;
+    background-color: #fff;
+    color: var(--ink);
+    text-align: left;
+}
+
+.schedule-location-result:hover,
+.schedule-location-result:focus {
+    border-color: var(--terracotta);
+    background-color: rgba(196, 105, 79, 0.08);
+}
+
+.schedule-location-result strong {
+    font-size: 0.78rem;
+}
+
+.schedule-location-result span {
+    overflow-wrap: anywhere;
+    color: #8a7f77;
+    font-size: 0.68rem;
+}
+
+.schedule-location-panel .form-control-sm {
+    min-height: 38px;
+    font-size: 0.72rem;
+}
+
 .schedule-date-dropdown {
     width: 100%;
 }
@@ -1148,6 +1248,139 @@ body {
 .schedule-cost {
     color: #8a7f77;
     font-size: 0.68rem;
+}
+
+.schedule-item-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.schedule-location-badge {
+    padding: 0.12rem 0.45rem;
+    border-radius: 0.35rem;
+    background-color: rgba(21, 128, 61, 0.1);
+    color: #15803d;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.schedule-location-badge.muted {
+    background-color: rgba(138, 127, 119, 0.12);
+    color: #8a7f77;
+}
+
+.trip-map-card {
+    overflow: hidden;
+    margin-top: 1.25rem;
+    border: 1px solid var(--sand-dark);
+    border-radius: 1rem;
+    background-color: var(--white);
+    box-shadow: 0 0.65rem 1.8rem rgba(26, 22, 18, 0.06);
+}
+
+.trip-map-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem 1.75rem;
+    border-bottom: 1px solid var(--sand-dark);
+}
+
+.trip-map-heading > div > span {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--terracotta);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.trip-map-heading h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.trip-map-heading small {
+    display: block;
+    margin-top: 0.25rem;
+    color: #8a7f77;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.trip-map-count {
+    padding: 0.35rem 0.65rem;
+    border-radius: 2rem;
+    background-color: var(--sand);
+    color: #746b65;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.trip-map-shell {
+    position: relative;
+    min-height: 380px;
+}
+
+.trip-map-canvas {
+    width: 100%;
+    min-height: 380px;
+    background-color: #e7ece7;
+}
+
+.trip-map-canvas-disabled {
+    background:
+        linear-gradient(135deg, rgba(237, 229, 212, 0.7), rgba(254, 252, 248, 0.9)),
+        repeating-linear-gradient(45deg, rgba(26, 22, 18, 0.05) 0 1px, transparent 1px 18px);
+}
+
+.trip-map-message {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: min(420px, calc(100% - 2rem));
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(196, 105, 79, 0.24);
+    border-radius: 0.65rem;
+    background-color: rgba(254, 252, 248, 0.94);
+    color: #746b65;
+    font-size: 0.78rem;
+    font-weight: 700;
+    box-shadow: 0 0.55rem 1.5rem rgba(26, 22, 18, 0.1);
+}
+
+.trip-map-info-window {
+    min-width: 180px;
+    padding: 0.75rem;
+    color: var(--ink);
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.trip-map-info-window strong,
+.trip-map-info-window span {
+    display: block;
+}
+
+.trip-map-info-window strong {
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.trip-map-info-window span {
+    color: var(--terracotta);
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.trip-map-info-window p {
+    margin: 0.35rem 0 0;
+    color: #746b65;
+    font-size: 0.72rem;
+    line-height: 1.5;
 }
 
 .schedule-empty-day {
@@ -1577,6 +1810,31 @@ body {
     .schedule-manage-toggle {
         grid-template-columns: auto minmax(0, 1fr);
         padding: 1rem;
+    }
+
+    .trip-map-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+
+    .trip-map-shell,
+    .trip-map-canvas {
+        min-height: 300px;
+    }
+
+    .trip-map-message {
+        right: 0.75rem;
+        bottom: 0.75rem;
+    }
+
+    .schedule-location-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .schedule-location-button {
+        width: 100%;
     }
 
     .schedule-manage-arrow {

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -227,6 +228,8 @@ public class TripDetailServlet extends HttpServlet {
         detail.setCost(parseCost(request.getParameter("cost")));
         detail.setMemo(trim(request.getParameter("memo")));
         detail.setSortOrder(0);
+        detail.setLatitude(parseCoordinate(request.getParameter("latitude")));
+        detail.setLongitude(parseCoordinate(request.getParameter("longitude")));
 
         return detail;
     }
@@ -248,6 +251,22 @@ public class TripDetailServlet extends HttpServlet {
 
         if (detail.getCost() < 0) {
             return "예상 비용은 0원 이상으로 입력해주세요.";
+        }
+
+        if ((detail.getLatitude() == null) != (detail.getLongitude() == null)) {
+            return "위도와 경도는 함께 저장되어야 합니다.";
+        }
+
+        if (detail.getLatitude() != null
+                && (detail.getLatitude().compareTo(BigDecimal.valueOf(-90)) < 0
+                || detail.getLatitude().compareTo(BigDecimal.valueOf(90)) > 0)) {
+            return "위도 값이 올바르지 않습니다.";
+        }
+
+        if (detail.getLongitude() != null
+                && (detail.getLongitude().compareTo(BigDecimal.valueOf(-180)) < 0
+                || detail.getLongitude().compareTo(BigDecimal.valueOf(180)) > 0)) {
+            return "경도 값이 올바르지 않습니다.";
         }
 
         return null;
@@ -338,6 +357,8 @@ public class TripDetailServlet extends HttpServlet {
             request.setAttribute("formVisitTime", "");
             request.setAttribute("formCost", "");
             request.setAttribute("formMemo", "");
+            request.setAttribute("formLatitude", "");
+            request.setAttribute("formLongitude", "");
             return;
         }
 
@@ -358,6 +379,8 @@ public class TripDetailServlet extends HttpServlet {
         request.setAttribute("formVisitTime", detail.getVisitTimeValue());
         request.setAttribute("formCost", detail.getCost() == 0 ? "" : detail.getCost());
         request.setAttribute("formMemo", detail.getMemo());
+        request.setAttribute("formLatitude", detail.getLatitudeValue());
+        request.setAttribute("formLongitude", detail.getLongitudeValue());
     }
 
     private String formatDateLabel(LocalDate date) {
@@ -460,6 +483,19 @@ public class TripDetailServlet extends HttpServlet {
             return Integer.parseInt(trimmedValue);
         } catch (NumberFormatException e) {
             return -1;
+        }
+    }
+
+    private BigDecimal parseCoordinate(String value) {
+        String trimmedValue = trim(value);
+        if (trimmedValue.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return new BigDecimal(trimmedValue);
+        } catch (NumberFormatException e) {
+            return null;
         }
     }
 

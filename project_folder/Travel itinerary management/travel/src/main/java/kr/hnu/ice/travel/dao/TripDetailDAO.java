@@ -3,18 +3,21 @@ package kr.hnu.ice.travel.dao;
 import kr.hnu.ice.travel.dto.TripDetailDTO;
 import kr.hnu.ice.travel.util.DBUtil;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TripDetailDAO {
     public List<TripDetailDTO> findByTripId(int tripId) throws SQLException {
-        String sql = "SELECT detail_id, trip_id, schedule_date, place_name, visit_time, memo, cost, sort_order "
+        String sql = "SELECT detail_id, trip_id, schedule_date, place_name, visit_time, "
+                + "memo, cost, sort_order, latitude, longitude "
                 + "FROM trip_details "
                 + "WHERE trip_id = ? "
                 + "ORDER BY schedule_date ASC, visit_time ASC, sort_order ASC, detail_id ASC";
@@ -35,7 +38,8 @@ public class TripDetailDAO {
     }
 
     public TripDetailDTO findByIdAndTripId(int detailId, int tripId) throws SQLException {
-        String sql = "SELECT detail_id, trip_id, schedule_date, place_name, visit_time, memo, cost, sort_order "
+        String sql = "SELECT detail_id, trip_id, schedule_date, place_name, visit_time, "
+                + "memo, cost, sort_order, latitude, longitude "
                 + "FROM trip_details "
                 + "WHERE detail_id = ? AND trip_id = ?";
 
@@ -56,8 +60,8 @@ public class TripDetailDAO {
 
     public boolean insert(TripDetailDTO detail) throws SQLException {
         String sql = "INSERT INTO trip_details "
-                + "(trip_id, schedule_date, place_name, visit_time, memo, cost, sort_order) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                + "(trip_id, schedule_date, place_name, visit_time, memo, cost, sort_order, latitude, longitude) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -69,7 +73,8 @@ public class TripDetailDAO {
 
     public boolean update(TripDetailDTO detail) throws SQLException {
         String sql = "UPDATE trip_details "
-                + "SET schedule_date = ?, place_name = ?, visit_time = ?, memo = ?, cost = ?, sort_order = ? "
+                + "SET schedule_date = ?, place_name = ?, visit_time = ?, memo = ?, "
+                + "cost = ?, sort_order = ?, latitude = ?, longitude = ? "
                 + "WHERE detail_id = ? AND trip_id = ?";
 
         try (Connection connection = DBUtil.getConnection();
@@ -81,8 +86,10 @@ public class TripDetailDAO {
             preparedStatement.setString(4, detail.getMemo());
             preparedStatement.setInt(5, detail.getCost());
             preparedStatement.setInt(6, detail.getSortOrder());
-            preparedStatement.setInt(7, detail.getDetailId());
-            preparedStatement.setInt(8, detail.getTripId());
+            setCoordinate(preparedStatement, 7, detail.getLatitude());
+            setCoordinate(preparedStatement, 8, detail.getLongitude());
+            preparedStatement.setInt(9, detail.getDetailId());
+            preparedStatement.setInt(10, detail.getTripId());
             return preparedStatement.executeUpdate() > 0;
         }
     }
@@ -109,6 +116,19 @@ public class TripDetailDAO {
         preparedStatement.setString(5, detail.getMemo());
         preparedStatement.setInt(6, detail.getCost());
         preparedStatement.setInt(7, detail.getSortOrder());
+        setCoordinate(preparedStatement, 8, detail.getLatitude());
+        setCoordinate(preparedStatement, 9, detail.getLongitude());
+    }
+
+    private void setCoordinate(PreparedStatement preparedStatement, int parameterIndex, BigDecimal coordinate)
+            throws SQLException {
+
+        if (coordinate == null) {
+            preparedStatement.setNull(parameterIndex, Types.DECIMAL);
+            return;
+        }
+
+        preparedStatement.setBigDecimal(parameterIndex, coordinate);
     }
 
     private TripDetailDTO mapTripDetail(ResultSet resultSet) throws SQLException {
@@ -123,6 +143,8 @@ public class TripDetailDAO {
         detail.setMemo(resultSet.getString("memo"));
         detail.setCost(resultSet.getInt("cost"));
         detail.setSortOrder(resultSet.getInt("sort_order"));
+        detail.setLatitude(resultSet.getBigDecimal("latitude"));
+        detail.setLongitude(resultSet.getBigDecimal("longitude"));
 
         return detail;
     }
