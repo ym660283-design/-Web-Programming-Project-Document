@@ -211,7 +211,8 @@
                 <div id="tripMap"
                      class="trip-map-canvas"
                      data-map-ready="<%= hasKakaoMapKey ? "true" : "false" %>"
-                     data-destination="<%= escapeHtml(request.getAttribute("destination")) %>"></div>
+                     data-destination="<%= escapeHtml(request.getAttribute("destination")) %>"
+                     data-route-url="${pageContext.request.contextPath}/trip-route?trip_id=<%= tripId %>&amp;day=<%= selectedDay %>"></div>
                 <div class="trip-map-message" data-trip-map-message>
                     <% if (hasKakaoMapKey) { %>
                         위치가 저장된 세부 일정이 없으면 마커가 표시되지 않습니다.
@@ -235,6 +236,18 @@
                          data-lat="<%= escapeHtml(detail.getLatitudeValue()) %>"
                          data-lng="<%= escapeHtml(detail.getLongitudeValue()) %>"></div>
                 <% } %>
+            </div>
+
+            <div class="trip-route-summary" data-trip-route-summary hidden>
+                <div class="trip-route-summary-heading">
+                    <div>
+                        <span>ROUTE ESTIMATE</span>
+                        <h3>장소 간 이동 예상</h3>
+                    </div>
+                    <strong data-trip-route-total></strong>
+                </div>
+                <div class="trip-route-legs" data-trip-route-legs></div>
+                <p data-trip-route-note>지도 동선과 이동시간은 저장된 위치 사이의 직선거리 기준 예상값입니다.</p>
             </div>
         </section>
 
