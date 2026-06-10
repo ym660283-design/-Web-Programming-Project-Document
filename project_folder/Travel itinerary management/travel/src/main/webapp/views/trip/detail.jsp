@@ -314,21 +314,20 @@
                         </div>
 
                         <div class="schedule-location-panel"
-                             data-location-panel
+                             data-location-modal-panel
                              data-destination="<%= escapeHtml(request.getAttribute("destination")) %>"
                              data-map-ready="<%= hasKakaoMapKey ? "true" : "false" %>">
                             <div class="schedule-location-header">
-                                <label class="form-label mb-0" for="locationSearchButton">위치 정보</label>
+                                <span class="form-label mb-0">위치 정보</span>
                                 <button class="btn schedule-location-button"
                                         id="locationSearchButton"
                                         type="button">
-                                    장소 위치 찾기
+                                    장소 위치 선택
                                 </button>
                             </div>
                             <p class="schedule-location-status" data-location-status>
                                 위치를 선택하면 지도 마커에 사용할 위치 정보가 저장됩니다.
                             </p>
-                            <div class="schedule-location-results" data-location-results hidden></div>
                             <input id="latitude" name="latitude" type="hidden" value="<%= formLatitude %>">
                             <input id="longitude" name="longitude" type="hidden" value="<%= formLongitude %>">
                         </div>
@@ -421,6 +420,62 @@
                 </section>
             </div>
         </section>
+
+        <div class="schedule-location-modal"
+             data-location-modal
+             hidden
+             aria-hidden="true">
+            <div class="schedule-location-modal-backdrop" data-location-modal-close></div>
+            <section class="schedule-location-dialog"
+                     role="dialog"
+                     aria-modal="true"
+                     aria-labelledby="locationModalTitle">
+                <div class="schedule-location-modal-header">
+                    <div>
+                        <span>LOCATION SEARCH</span>
+                        <h2 id="locationModalTitle">방문 장소 위치 선택</h2>
+                    </div>
+                    <button class="schedule-location-modal-close"
+                            type="button"
+                            data-location-modal-close
+                            aria-label="닫기">&times;</button>
+                </div>
+
+                <div class="schedule-location-search">
+                    <label class="visually-hidden" for="locationModalKeyword">장소 검색어</label>
+                    <input class="form-control"
+                           id="locationModalKeyword"
+                           type="text"
+                           maxlength="100"
+                           placeholder="방문 장소를 검색하세요"
+                           data-location-modal-keyword>
+                    <button class="btn schedule-location-button"
+                            type="button"
+                            data-location-modal-search>검색</button>
+                </div>
+
+                <p class="schedule-location-status" data-location-modal-status>
+                    검색 결과에서 장소를 선택하거나 지도에서 위치를 클릭하세요.
+                </p>
+
+                <div class="schedule-location-modal-body">
+                    <div class="schedule-location-modal-map"
+                         id="locationPickerMap"
+                         data-location-modal-map></div>
+                    <div class="schedule-location-results schedule-location-modal-results"
+                         data-location-modal-results
+                         hidden></div>
+                </div>
+
+                <div class="schedule-location-modal-footer">
+                    <p data-location-modal-selected>선택된 위치가 없습니다.</p>
+                    <button class="btn trip-primary-button"
+                            type="button"
+                            data-location-modal-apply
+                            disabled>이 위치 사용</button>
+                </div>
+            </section>
+        </div>
         <% } %>
     </div>
 </section>
@@ -429,6 +484,7 @@
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=<%= escapeHtml(kakaoMapAppKey.trim()) %>&amp;libraries=services&amp;autoload=false"></script>
 <% } %>
 <script src="${pageContext.request.contextPath}/assets/js/map.js"></script>
+<script src="${pageContext.request.contextPath}/assets/js/location-modal.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/trip.js"></script>
 
 <%@ include file="/views/common/footer.jsp" %>
