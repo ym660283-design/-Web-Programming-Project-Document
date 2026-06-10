@@ -300,29 +300,11 @@
                                 </button>
                             </div>
                             <p class="schedule-location-status" data-location-status>
-                                위치를 선택하면 위도와 경도가 함께 저장됩니다.
+                                위치를 선택하면 지도 마커에 사용할 위치 정보가 저장됩니다.
                             </p>
                             <div class="schedule-location-results" data-location-results hidden></div>
-                            <div class="row g-2">
-                                <div class="col-sm-6">
-                                    <input class="form-control form-control-sm"
-                                           id="latitude"
-                                           name="latitude"
-                                           type="text"
-                                           value="<%= formLatitude %>"
-                                           placeholder="위도"
-                                           readonly>
-                                </div>
-                                <div class="col-sm-6">
-                                    <input class="form-control form-control-sm"
-                                           id="longitude"
-                                           name="longitude"
-                                           type="text"
-                                           value="<%= formLongitude %>"
-                                           placeholder="경도"
-                                           readonly>
-                                </div>
-                            </div>
+                            <input id="latitude" name="latitude" type="hidden" value="<%= formLatitude %>">
+                            <input id="longitude" name="longitude" type="hidden" value="<%= formLongitude %>">
                         </div>
 
                         <div class="row g-3 mb-3">

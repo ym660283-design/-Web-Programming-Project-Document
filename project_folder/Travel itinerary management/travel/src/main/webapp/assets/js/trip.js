@@ -167,7 +167,7 @@
                 return;
             }
 
-            setStatus("위치를 선택하면 위도와 경도가 함께 저장됩니다.", "");
+            setStatus("위치를 선택하면 지도 마커에 사용할 위치 정보가 저장됩니다.", "");
         }
 
         if (!apiReady || panel.dataset.mapReady !== "true" || !window.kakao.maps.services) {

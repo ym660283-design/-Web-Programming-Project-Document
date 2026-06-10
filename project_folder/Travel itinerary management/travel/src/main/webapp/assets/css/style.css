@@ -1031,11 +1031,6 @@ body {
     font-size: 0.68rem;
 }
 
-.schedule-location-panel .form-control-sm {
-    min-height: 38px;
-    font-size: 0.72rem;
-}
-
 .schedule-date-dropdown {
     width: 100%;
 }
