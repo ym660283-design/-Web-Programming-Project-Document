@@ -415,6 +415,7 @@
 <% if (hasKakaoMapKey) { %>
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=<%= escapeHtml(kakaoMapAppKey.trim()) %>&amp;libraries=services&amp;autoload=false"></script>
 <% } %>
+<script src="${pageContext.request.contextPath}/assets/js/map.js"></script>
 <script src="${pageContext.request.contextPath}/assets/js/trip.js"></script>
 
 <%@ include file="/views/common/footer.jsp" %>
