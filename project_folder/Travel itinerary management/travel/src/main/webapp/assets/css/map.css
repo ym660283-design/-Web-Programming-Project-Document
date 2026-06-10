@@ -1,0 +1,39 @@
+.trip-map-location-popup {
+    min-width: 200px;
+    padding: 0.8rem;
+    color: var(--ink);
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.trip-map-location-popup strong,
+.trip-map-location-popup span {
+    display: block;
+}
+
+.trip-map-location-popup strong {
+    margin-bottom: 0.25rem;
+    font-size: 0.82rem;
+}
+
+.trip-map-location-popup span {
+    color: #746b65;
+    font-size: 0.68rem;
+    line-height: 1.45;
+}
+
+.trip-map-location-popup button {
+    width: 100%;
+    margin-top: 0.65rem;
+    padding: 0.5rem 0.65rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background-color: var(--terracotta);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.trip-map-location-popup button:hover,
+.trip-map-location-popup button:focus {
+    background-color: #a94f3b;
+}

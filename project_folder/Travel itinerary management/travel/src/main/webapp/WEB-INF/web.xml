@@ -11,4 +11,8 @@
     <param-name>kakaoMapAppKey</param-name>
     <param-value>5f31fd080186ab6f02c1a615b6007751</param-value>
   </context-param>
+  <context-param>
+    <param-name>kakaoRestApiKey</param-name>
+    <param-value>7a365d1d7dacd255a94da5cf981622b3</param-value>
+  </context-param>
 </web-app>

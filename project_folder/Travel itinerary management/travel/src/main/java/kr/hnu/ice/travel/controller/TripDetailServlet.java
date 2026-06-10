@@ -254,19 +254,19 @@ public class TripDetailServlet extends HttpServlet {
         }
 
         if ((detail.getLatitude() == null) != (detail.getLongitude() == null)) {
-            return "위도와 경도는 함께 저장되어야 합니다.";
+            return "위치 정보가 올바르지 않습니다.";
         }
 
         if (detail.getLatitude() != null
                 && (detail.getLatitude().compareTo(BigDecimal.valueOf(-90)) < 0
                 || detail.getLatitude().compareTo(BigDecimal.valueOf(90)) > 0)) {
-            return "위도 값이 올바르지 않습니다.";
+            return "위치 정보가 올바르지 않습니다.";
         }
 
         if (detail.getLongitude() != null
                 && (detail.getLongitude().compareTo(BigDecimal.valueOf(-180)) < 0
                 || detail.getLongitude().compareTo(BigDecimal.valueOf(180)) > 0)) {
-            return "경도 값이 올바르지 않습니다.";
+            return "위치 정보가 올바르지 않습니다.";
         }
 
         return null;
