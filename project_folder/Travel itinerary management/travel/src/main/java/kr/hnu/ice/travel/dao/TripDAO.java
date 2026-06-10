@@ -15,7 +15,7 @@ import java.util.List;
 public class TripDAO {
     public List<TripDTO> findAccessibleTrips(int userId) throws SQLException {
         String sql = "SELECT t.trip_id, t.user_id, u.user_name AS owner_name, "
-                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code "
+                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code, tm.role "
                 + "FROM trips t "
                 + "JOIN users u ON t.user_id = u.user_id "
                 + "LEFT JOIN trip_members tm ON tm.trip_id = t.trip_id AND tm.user_id = ? "
@@ -40,9 +40,10 @@ public class TripDAO {
 
     public TripDTO findAccessibleById(int tripId, int userId) throws SQLException {
         String sql = "SELECT t.trip_id, t.user_id, u.user_name AS owner_name, "
-                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code "
+                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code, tm.role "
                 + "FROM trips t "
                 + "JOIN users u ON t.user_id = u.user_id "
+                + "LEFT JOIN trip_members tm ON tm.trip_id = t.trip_id AND tm.user_id = ? "
                 + "WHERE t.trip_id = ? "
                 + "AND (t.user_id = ? OR EXISTS ("
                 + "    SELECT 1 FROM trip_members tm WHERE tm.trip_id = t.trip_id AND tm.user_id = ?"
@@ -51,9 +52,10 @@ public class TripDAO {
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, tripId);
-            preparedStatement.setInt(2, userId);
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, tripId);
             preparedStatement.setInt(3, userId);
+            preparedStatement.setInt(4, userId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -66,7 +68,7 @@ public class TripDAO {
 
     public TripDTO findByIdAndOwnerId(int tripId, int ownerId) throws SQLException {
         String sql = "SELECT t.trip_id, t.user_id, u.user_name AS owner_name, "
-                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code "
+                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code, NULL AS role "
                 + "FROM trips t "
                 + "JOIN users u ON t.user_id = u.user_id "
                 + "WHERE t.trip_id = ? AND t.user_id = ?";
@@ -112,10 +114,31 @@ public class TripDAO {
         }
     }
 
+    public TripDTO findByShareCode(String shareCode, int currentUserId) throws SQLException {
+        String sql = "SELECT t.trip_id, t.user_id, u.user_name AS owner_name, "
+                + "t.trip_title, t.destination, t.start_date, t.end_date, t.description, t.share_code, tm.role "
+                + "FROM trips t "
+                + "JOIN users u ON t.user_id = u.user_id "
+                + "LEFT JOIN trip_members tm ON tm.trip_id = t.trip_id AND tm.user_id = ? "
+                + "WHERE t.share_code = ?";
+
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, currentUserId);
+            statement.setString(2, shareCode);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() ? mapTrip(resultSet, currentUserId) : null;
+            }
+        }
+    }
+
     public boolean update(TripDTO trip) throws SQLException {
         String sql = "UPDATE trips "
                 + "SET trip_title = ?, destination = ?, start_date = ?, end_date = ?, description = ? "
-                + "WHERE trip_id = ? AND user_id = ?";
+                + "WHERE trip_id = ? AND (user_id = ? OR EXISTS ("
+                + "SELECT 1 FROM trip_members "
+                + "WHERE trip_members.trip_id = trips.trip_id "
+                + "AND trip_members.user_id = ? AND trip_members.role = 'editor'))";
 
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -127,7 +150,19 @@ public class TripDAO {
             preparedStatement.setString(5, trip.getDescription());
             preparedStatement.setInt(6, trip.getTripId());
             preparedStatement.setInt(7, trip.getUserId());
+            preparedStatement.setInt(8, trip.getUserId());
             return preparedStatement.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateShareCode(int tripId, int ownerId, String shareCode) throws SQLException {
+        String sql = "UPDATE trips SET share_code = ? WHERE trip_id = ? AND user_id = ?";
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, shareCode);
+            statement.setInt(2, tripId);
+            statement.setInt(3, ownerId);
+            return statement.executeUpdate() > 0;
         }
     }
 
@@ -156,6 +191,7 @@ public class TripDAO {
         trip.setDescription(resultSet.getString("description"));
         trip.setShareCode(resultSet.getString("share_code"));
         trip.setOwner(trip.getUserId() == currentUserId);
+        trip.setMemberRole(resultSet.getString("role"));
 
         return trip;
     }

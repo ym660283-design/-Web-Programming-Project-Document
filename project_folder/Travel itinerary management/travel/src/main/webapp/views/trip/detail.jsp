@@ -40,6 +40,7 @@
     }
 
     boolean isOwner = Boolean.TRUE.equals(request.getAttribute("isOwner"));
+    boolean canEdit = Boolean.TRUE.equals(request.getAttribute("canEdit"));
     int tripId = ((Integer) request.getAttribute("tripId")).intValue();
     int selectedDay = request.getAttribute("selectedDay") == null
             ? 1
@@ -91,15 +92,21 @@
                 <h1><%= escapeHtml(request.getAttribute("tripTitle")) %></h1>
                 <p><%= escapeHtml(request.getAttribute("description")) %></p>
             </div>
-            <% if (isOwner) { %>
+            <% if (canEdit || isOwner) { %>
                 <div class="trip-detail-actions">
+                    <% if (canEdit) { %>
                     <a class="btn trip-edit-button"
                        href="${pageContext.request.contextPath}/trips?action=edit&amp;trip_id=<%= tripId %>">일정 수정</a>
+                    <% } %>
+                    <% if (isOwner) { %>
+                    <a class="btn trip-edit-button"
+                       href="${pageContext.request.contextPath}/members?trip_id=<%= tripId %>">공유 / 참여자 관리</a>
                     <form action="${pageContext.request.contextPath}/trips" method="post">
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="trip_id" value="<%= tripId %>">
                         <button class="btn trip-delete-button" type="submit">일정 삭제</button>
                     </form>
+                    <% } %>
                 </div>
             <% } %>
         </div>
@@ -125,6 +132,12 @@
                         <dt>작성자</dt>
                         <dd><%= escapeHtml(request.getAttribute("ownerName")) %></dd>
                     </div>
+                    <% if (!isOwner) { %>
+                    <div>
+                        <dt>내 권한</dt>
+                        <dd><%= canEdit ? "편집자" : "열람자" %></dd>
+                    </div>
+                    <% } %>
                 </dl>
 
                 <div class="trip-overview-description">
@@ -251,7 +264,7 @@
             </div>
         </section>
 
-        <% if (isOwner) { %>
+        <% if (canEdit) { %>
         <section class="schedule-manage-card">
             <div class="schedule-manage-toggle">
                 <span class="schedule-manage-icon" aria-hidden="true">+</span>

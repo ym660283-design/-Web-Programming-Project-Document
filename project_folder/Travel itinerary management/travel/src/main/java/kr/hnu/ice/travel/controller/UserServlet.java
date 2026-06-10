@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = {"/login", "/logout", "/register", "/user/check-login-id"})
 public class UserServlet extends HttpServlet {
+    private static final String PENDING_SHARE_CODE = "pendingShareCode";
     private static final String LOGIN_VIEW = "/views/user/login.jsp";
     private static final String REGISTER_VIEW = "/views/user/register.jsp";
     private static final String TRIP_LIST_PATH = "/trips";
@@ -133,6 +134,13 @@ public class UserServlet extends HttpServlet {
             }
 
             request.getSession(true).setAttribute(SessionNames.LOGIN_USER, loginUser);
+            String pendingShareCode = (String) request.getSession()
+                    .getAttribute(PENDING_SHARE_CODE);
+            if (pendingShareCode != null && !pendingShareCode.trim().isEmpty()) {
+                request.getSession().removeAttribute(PENDING_SHARE_CODE);
+                response.sendRedirect(request.getContextPath() + "/share?code=" + pendingShareCode);
+                return;
+            }
             response.sendRedirect(request.getContextPath() + TRIP_LIST_PATH);
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "로그인 처리 중 오류가 발생했습니다.");
