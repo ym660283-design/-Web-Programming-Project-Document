@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -89,7 +91,35 @@ public final class DBUtil {
              Statement statement = connection.createStatement()) {
 
             executeSqlFile(statement, SCHEMA_FILE);
+            ensureTripDetailLocationColumns(connection, statement);
             executeSqlFile(statement, SAMPLE_DATA_FILE);
+        }
+    }
+
+    private static void ensureTripDetailLocationColumns(Connection connection, Statement statement)
+            throws SQLException {
+
+        if (!hasColumn(connection, "trip_details", "latitude")) {
+            statement.execute("ALTER TABLE trip_details ADD COLUMN latitude DECIMAL(10, 7)");
+        }
+
+        if (!hasColumn(connection, "trip_details", "longitude")) {
+            statement.execute("ALTER TABLE trip_details ADD COLUMN longitude DECIMAL(10, 7)");
+        }
+    }
+
+    private static boolean hasColumn(Connection connection, String tableName, String columnName)
+            throws SQLException {
+
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, columnName)) {
+            if (resultSet.next()) {
+                return true;
+            }
+        }
+
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName.toUpperCase(), columnName.toUpperCase())) {
+            return resultSet.next();
         }
     }
 
