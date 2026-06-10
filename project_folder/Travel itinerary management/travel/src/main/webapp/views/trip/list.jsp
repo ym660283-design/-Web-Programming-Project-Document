@@ -93,9 +93,11 @@
                         <div class="trip-list-actions">
                             <a class="btn trip-outline-button"
                                href="${pageContext.request.contextPath}/trip-details?trip_id=<%= trip.getTripId() %>">상세보기</a>
-                            <% if (trip.isOwner()) { %>
+                            <% if (trip.canEdit()) { %>
                                 <a class="btn trip-edit-button"
                                    href="${pageContext.request.contextPath}/trips?action=edit&trip_id=<%= trip.getTripId() %>">수정</a>
+                            <% } %>
+                            <% if (trip.isOwner()) { %>
                                 <form action="${pageContext.request.contextPath}/trips" method="post">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="trip_id" value="<%= trip.getTripId() %>">

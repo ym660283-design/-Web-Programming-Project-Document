@@ -58,8 +58,8 @@ public class TripDetailServlet extends HttpServlet {
             int selectedDay = parseSelectedDay(request, trip);
 
             if ("editDetail".equals(request.getParameter("action"))) {
-                if (!trip.isOwner()) {
-                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "작성자만 세부 일정을 수정할 수 있습니다.");
+                if (!trip.canEdit()) {
+                    response.sendError(HttpServletResponse.SC_FORBIDDEN, "편집 권한이 있는 사용자만 세부 일정을 수정할 수 있습니다.");
                     return;
                 }
 
@@ -100,9 +100,9 @@ public class TripDetailServlet extends HttpServlet {
         }
 
         try {
-            TripDTO trip = tripDAO.findByIdAndOwnerId(tripId, loginUser.getUserId());
-            if (trip == null) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "작성자만 세부 일정을 관리할 수 있습니다.");
+            TripDTO trip = tripDAO.findAccessibleById(tripId, loginUser.getUserId());
+            if (trip == null || !trip.canEdit()) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "편집 권한이 있는 사용자만 세부 일정을 관리할 수 있습니다.");
                 return;
             }
 
@@ -283,6 +283,8 @@ public class TripDetailServlet extends HttpServlet {
         request.setAttribute("description", trip.getDescription());
         request.setAttribute("ownerName", trip.getOwnerName());
         request.setAttribute("isOwner", trip.isOwner());
+        request.setAttribute("canEdit", trip.canEdit());
+        request.setAttribute("memberRole", trip.getMemberRole());
     }
 
     private void setScheduleDateAttributes(HttpServletRequest request, TripDTO trip,
@@ -402,6 +404,12 @@ public class TripDetailServlet extends HttpServlet {
             request.setAttribute("successMessage", "세부 일정이 수정되었습니다.");
         } else if ("detail-deleted".equals(status)) {
             request.setAttribute("successMessage", "세부 일정이 삭제되었습니다.");
+        } else if ("joined".equals(status)) {
+            request.setAttribute("successMessage", "여행 일정에 참여했습니다.");
+        } else if ("already-member".equals(status)) {
+            request.setAttribute("successMessage", "이미 참여 중인 여행 일정입니다.");
+        } else if ("member-access-denied".equals(status)) {
+            request.setAttribute("errorMessage", "참여자와 권한 관리는 여행 일정 작성자만 이용할 수 있습니다.");
         }
     }
 

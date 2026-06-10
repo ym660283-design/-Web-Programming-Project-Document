@@ -642,6 +642,187 @@ body {
     gap: 1.25rem;
 }
 
+.member-eyebrow {
+    display: inline-block;
+    margin-bottom: 0.45rem;
+    color: var(--terracotta);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+}
+
+.member-join-card,
+.member-panel {
+    border: 1px solid var(--sand-dark);
+    border-radius: 1rem;
+    background-color: var(--white);
+    box-shadow: 0 0.65rem 1.8rem rgba(26, 22, 18, 0.06);
+}
+
+.member-join-card {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2.5rem;
+}
+
+.member-join-card h1,
+.member-page-heading h1 {
+    margin-bottom: 0.65rem;
+    font-family: "Playfair Display", "Noto Sans KR", serif;
+    font-weight: 700;
+}
+
+.member-trip-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 2rem 0;
+}
+
+.member-trip-summary div {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background-color: rgba(237, 229, 212, 0.38);
+}
+
+.member-trip-summary dt {
+    margin-bottom: 0.25rem;
+    color: #8a7f77;
+    font-size: 0.7rem;
+}
+
+.member-trip-summary dd {
+    margin: 0;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.member-join-notice,
+.member-panel p,
+.member-page-heading p,
+.member-list-heading p {
+    color: #746b65;
+    font-size: 0.82rem;
+    line-height: 1.7;
+}
+
+.member-join-actions,
+.member-page-heading,
+.member-list-heading,
+.member-share-box,
+.member-role-form {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.member-join-actions form {
+    margin: 0;
+}
+
+.member-page-heading,
+.member-list-heading {
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.member-page-heading p,
+.member-list-heading p {
+    margin: 0;
+}
+
+.member-management-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+.member-panel {
+    padding: 1.5rem;
+}
+
+.member-panel h2 {
+    margin-bottom: 0.45rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.member-share-box {
+    margin: 1.15rem 0;
+}
+
+.member-share-box .form-control {
+    min-width: 0;
+}
+
+.member-share-box .btn {
+    flex: 0 0 auto;
+}
+
+.member-list-panel {
+    margin-top: 1.25rem;
+}
+
+.member-list {
+    border-top: 1px solid var(--sand-dark);
+}
+
+.member-item {
+    display: grid;
+    grid-template-columns: auto minmax(180px, 1fr) auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--sand-dark);
+}
+
+.member-item:last-child {
+    border-bottom: 0;
+}
+
+.member-item form {
+    margin: 0;
+}
+
+.member-avatar {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 50%;
+    background-color: rgba(196, 105, 79, 0.12);
+    color: var(--terracotta);
+    font-weight: 700;
+}
+
+.member-identity strong,
+.member-identity span,
+.member-identity small {
+    display: block;
+}
+
+.member-identity span,
+.member-identity small {
+    color: #8a7f77;
+    font-size: 0.72rem;
+}
+
+.member-empty {
+    padding: 2rem 0 0.5rem;
+    border-top: 1px solid var(--sand-dark);
+    color: #8a7f77;
+    text-align: center;
+}
+
+.member-invite-steps {
+    margin: 1.15rem 0 0;
+    padding-left: 1.25rem;
+    color: var(--ink-light);
+    font-size: 0.82rem;
+    line-height: 1.9;
+}
+
 .trip-overview-card,
 .trip-schedule-card {
     background-color: var(--white);
@@ -1755,6 +1936,45 @@ body {
     .trip-detail-actions .btn,
     .trip-detail-actions form,
     .trip-detail-hero .trip-edit-button {
+        width: 100%;
+    }
+
+    .member-trip-summary,
+    .member-management-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .member-join-card {
+        padding: 1.5rem;
+    }
+
+    .member-join-actions,
+    .member-page-heading,
+    .member-list-heading,
+    .member-share-box,
+    .member-role-form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .member-join-actions form,
+    .member-join-actions .btn,
+    .member-page-heading .btn,
+    .member-share-box .btn,
+    .member-role-form .btn {
+        width: 100%;
+    }
+
+    .member-item {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .member-item form {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .member-item form .btn {
         width: 100%;
     }
 

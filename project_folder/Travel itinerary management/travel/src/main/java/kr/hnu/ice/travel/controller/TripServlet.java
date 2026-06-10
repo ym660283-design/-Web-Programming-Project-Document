@@ -18,6 +18,7 @@ import java.util.UUID;
 
 @WebServlet("/trips")
 public class TripServlet extends HttpServlet {
+    private static final int SHARE_CODE_RETRY_LIMIT = 5;
     private static final String LIST_VIEW = "/views/trip/list.jsp";
     private static final String FORM_VIEW = "/views/trip/form.jsp";
 
@@ -119,9 +120,9 @@ public class TripServlet extends HttpServlet {
         }
 
         try {
-            TripDTO trip = tripDAO.findByIdAndOwnerId(tripId, loginUser.getUserId());
-            if (trip == null) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "작성자만 여행 일정을 수정할 수 있습니다.");
+            TripDTO trip = tripDAO.findAccessibleById(tripId, loginUser.getUserId());
+            if (trip == null || !trip.canEdit()) {
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "편집 권한이 있는 사용자만 여행 일정을 수정할 수 있습니다.");
                 return;
             }
 
@@ -161,10 +162,8 @@ public class TripServlet extends HttpServlet {
             return;
         }
 
-        trip.setShareCode(createShareCode());
-
         try {
-            int tripId = tripDAO.insert(trip);
+            int tripId = insertTripWithUniqueShareCode(trip);
             response.sendRedirect(request.getContextPath() + "/trip-details?trip_id=" + tripId + "&status=created");
         } catch (SQLException e) {
             forwardFormError(
@@ -211,7 +210,7 @@ public class TripServlet extends HttpServlet {
         try {
             boolean updated = tripDAO.update(trip);
             if (!updated) {
-                response.sendError(HttpServletResponse.SC_FORBIDDEN, "작성자만 여행 일정을 수정할 수 있습니다.");
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "편집 권한이 있는 사용자만 여행 일정을 수정할 수 있습니다.");
                 return;
             }
 
@@ -341,6 +340,30 @@ public class TripServlet extends HttpServlet {
 
     private String createShareCode() {
         return UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+    }
+
+    private int insertTripWithUniqueShareCode(TripDTO trip) throws SQLException {
+        SQLException duplicateException = null;
+
+        for (int attempt = 0; attempt < SHARE_CODE_RETRY_LIMIT; attempt++) {
+            trip.setShareCode(createShareCode());
+            try {
+                return tripDAO.insert(trip);
+            } catch (SQLException e) {
+                if (!isDuplicateKey(e)) {
+                    throw e;
+                }
+                duplicateException = e;
+            }
+        }
+
+        throw duplicateException == null
+                ? new SQLException("공유 코드 생성에 실패했습니다.")
+                : duplicateException;
+    }
+
+    private boolean isDuplicateKey(SQLException e) {
+        return e.getErrorCode() == 1062 && "23000".equals(e.getSQLState());
     }
 
     private String trim(String value) {

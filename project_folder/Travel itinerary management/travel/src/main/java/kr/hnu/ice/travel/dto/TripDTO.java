@@ -19,6 +19,7 @@ public class TripDTO {
     private String description;
     private String shareCode;
     private boolean owner;
+    private String memberRole;
 
     public int getTripId() {
         return tripId;
@@ -98,6 +99,18 @@ public class TripDTO {
 
     public void setOwner(boolean owner) {
         this.owner = owner;
+    }
+
+    public String getMemberRole() {
+        return memberRole;
+    }
+
+    public void setMemberRole(String memberRole) {
+        this.memberRole = memberRole;
+    }
+
+    public boolean canEdit() {
+        return owner || "editor".equals(memberRole);
     }
 
     public String getStartDateValue() {
