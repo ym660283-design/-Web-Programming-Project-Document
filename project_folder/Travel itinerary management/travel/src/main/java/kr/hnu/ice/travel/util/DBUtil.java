@@ -2,9 +2,6 @@ package kr.hnu.ice.travel.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -15,8 +12,54 @@ import java.util.Properties;
 
 public final class DBUtil {
     private static final String CONFIG_FILE = "db.properties";
-    private static final String SCHEMA_FILE = "schema.sql";
-    private static final String SAMPLE_DATA_FILE = "sample_data.sql";
+    private static final String[] TABLE_DEFINITIONS = {
+            "CREATE TABLE IF NOT EXISTS users ("
+                    + "user_id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "login_id VARCHAR(50) NOT NULL UNIQUE, "
+                    + "password VARCHAR(255) NOT NULL, "
+                    + "user_name VARCHAR(50) NOT NULL, "
+                    + "email VARCHAR(100) NOT NULL, "
+                    + "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            "CREATE TABLE IF NOT EXISTS trips ("
+                    + "trip_id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "user_id INT NOT NULL, "
+                    + "trip_title VARCHAR(100) NOT NULL, "
+                    + "destination VARCHAR(100) NOT NULL, "
+                    + "start_date DATE NOT NULL, "
+                    + "end_date DATE NOT NULL, "
+                    + "description TEXT, "
+                    + "share_code VARCHAR(50) UNIQUE, "
+                    + "CONSTRAINT fk_trips_user FOREIGN KEY (user_id) REFERENCES users(user_id) "
+                    + "ON DELETE CASCADE"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            "CREATE TABLE IF NOT EXISTS trip_details ("
+                    + "detail_id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "trip_id INT NOT NULL, "
+                    + "schedule_date DATE NOT NULL, "
+                    + "place_name VARCHAR(100) NOT NULL, "
+                    + "visit_time TIME, "
+                    + "memo TEXT, "
+                    + "cost INT NOT NULL DEFAULT 0, "
+                    + "sort_order INT NOT NULL DEFAULT 0, "
+                    + "latitude DECIMAL(10, 7), "
+                    + "longitude DECIMAL(10, 7), "
+                    + "CONSTRAINT fk_trip_details_trip FOREIGN KEY (trip_id) REFERENCES trips(trip_id) "
+                    + "ON DELETE CASCADE"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci",
+            "CREATE TABLE IF NOT EXISTS trip_members ("
+                    + "member_id INT AUTO_INCREMENT PRIMARY KEY, "
+                    + "trip_id INT NOT NULL, "
+                    + "user_id INT NOT NULL, "
+                    + "role VARCHAR(20) NOT NULL DEFAULT 'viewer', "
+                    + "joined_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, "
+                    + "UNIQUE KEY uk_trip_members_trip_user (trip_id, user_id), "
+                    + "CONSTRAINT fk_trip_members_trip FOREIGN KEY (trip_id) REFERENCES trips(trip_id) "
+                    + "ON DELETE CASCADE, "
+                    + "CONSTRAINT fk_trip_members_user FOREIGN KEY (user_id) REFERENCES users(user_id) "
+                    + "ON DELETE CASCADE"
+                    + ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+    };
     private static final Properties DB_PROPERTIES = loadProperties();
     private static volatile boolean databaseInitialized;
 
@@ -82,17 +125,29 @@ public final class DBUtil {
     }
 
     private static void initializeDatabase() throws SQLException {
-        String serverUrl = toServerUrl(DB_PROPERTIES.getProperty("db.url"));
+        String databaseUrl = DB_PROPERTIES.getProperty("db.url");
+        String username = DB_PROPERTIES.getProperty("db.username");
+        String password = DB_PROPERTIES.getProperty("db.password");
+        String databaseName = getDatabaseName(databaseUrl);
 
         try (Connection connection = DriverManager.getConnection(
-                serverUrl,
-                DB_PROPERTIES.getProperty("db.username"),
-                DB_PROPERTIES.getProperty("db.password"));
+                toServerUrl(databaseUrl),
+                username,
+                password);
              Statement statement = connection.createStatement()) {
 
-            executeSqlFile(statement, SCHEMA_FILE);
+            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + quoteIdentifier(databaseName)
+                    + " DEFAULT CHARACTER SET utf8mb4"
+                    + " DEFAULT COLLATE utf8mb4_unicode_ci");
+        }
+
+        try (Connection connection = DriverManager.getConnection(databaseUrl, username, password);
+             Statement statement = connection.createStatement()) {
+
+            for (String tableDefinition : TABLE_DEFINITIONS) {
+                statement.executeUpdate(tableDefinition);
+            }
             ensureTripDetailLocationColumns(connection, statement);
-            executeSqlFile(statement, SAMPLE_DATA_FILE);
         }
     }
 
@@ -123,15 +178,6 @@ public final class DBUtil {
         }
     }
 
-    private static void executeSqlFile(Statement statement, String fileName) throws SQLException {
-        for (String sql : loadSqlFile(fileName).split(";")) {
-            String trimmedSql = sql.trim();
-            if (!trimmedSql.isEmpty()) {
-                statement.execute(trimmedSql);
-            }
-        }
-    }
-
     private static String toServerUrl(String databaseUrl) {
         int queryStartIndex = databaseUrl.indexOf('?');
         String baseUrl = queryStartIndex == -1 ? databaseUrl : databaseUrl.substring(0, queryStartIndex);
@@ -145,27 +191,23 @@ public final class DBUtil {
         return baseUrl.substring(0, databasePathStartIndex + 1) + queryString;
     }
 
-    private static boolean isUnknownDatabase(SQLException e) {
-        return e.getErrorCode() == 1049 || "42000".equals(e.getSQLState());
+    private static String getDatabaseName(String databaseUrl) {
+        int queryStartIndex = databaseUrl.indexOf('?');
+        String baseUrl = queryStartIndex == -1 ? databaseUrl : databaseUrl.substring(0, queryStartIndex);
+        int databasePathStartIndex = baseUrl.lastIndexOf('/');
+
+        if (databasePathStartIndex == -1 || databasePathStartIndex == baseUrl.length() - 1) {
+            throw new IllegalStateException("Database name is missing from URL: " + databaseUrl);
+        }
+
+        return baseUrl.substring(databasePathStartIndex + 1);
     }
 
-    private static String loadSqlFile(String fileName) {
-        try (InputStream inputStream = DBUtil.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (inputStream == null) {
-                throw new IllegalStateException(fileName + " not found");
-            }
+    private static String quoteIdentifier(String identifier) {
+        return "`" + identifier.replace("`", "``") + "`";
+    }
 
-            StringBuilder sqlFile = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    sqlFile.append(line).append('\n');
-                }
-            }
-            return sqlFile.toString();
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load " + fileName, e);
-        }
+    private static boolean isUnknownDatabase(SQLException e) {
+        return e.getErrorCode() == 1049 || "42000".equals(e.getSQLState());
     }
 }
