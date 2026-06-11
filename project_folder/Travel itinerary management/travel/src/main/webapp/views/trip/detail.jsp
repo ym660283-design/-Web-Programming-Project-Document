@@ -24,6 +24,8 @@
     List<String> scheduleDateLabels = (List<String>) request.getAttribute("scheduleDateLabels");
     List<TripDetailDTO> selectedScheduleDetails =
             (List<TripDetailDTO>) request.getAttribute("selectedScheduleDetails");
+    List<TripDetailDTO> allScheduleDetails =
+            (List<TripDetailDTO>) request.getAttribute("allScheduleDetails");
     Map<String, Integer> scheduleCounts = (Map<String, Integer>) request.getAttribute("scheduleCounts");
 
     if (scheduleDates == null) {
@@ -34,6 +36,9 @@
     }
     if (selectedScheduleDetails == null) {
         selectedScheduleDetails = Collections.emptyList();
+    }
+    if (allScheduleDetails == null) {
+        allScheduleDetails = Collections.emptyList();
     }
     if (scheduleCounts == null) {
         scheduleCounts = Collections.emptyMap();
@@ -265,7 +270,7 @@
         </section>
 
         <% if (canEdit) { %>
-        <section class="schedule-manage-card">
+        <section class="schedule-manage-card" id="scheduleManage">
             <div class="schedule-manage-toggle">
                 <span class="schedule-manage-icon" aria-hidden="true">+</span>
                 <span>
@@ -289,13 +294,15 @@
 
                         <div class="mb-3">
                             <label class="form-label" for="scheduleDate">일정 날짜</label>
-                            <select class="form-select" id="scheduleDate" name="schedule_date" required>
+                            <select class="form-select" id="scheduleDate" name="schedule_date"
+                                    data-schedule-date-select required>
                                 <% for (int i = 0; i < scheduleDates.size(); i++) {
                                     int day = i + 1;
                                     String dateValue = scheduleDates.get(i);
                                     String selected = dateValue.equals(formScheduleDate) ? " selected" : "";
                                 %>
-                                    <option value="<%= escapeHtml(dateValue) %>"<%= selected %>>
+                                    <option value="<%= escapeHtml(dateValue) %>"
+                                            data-day="<%= day %>"<%= selected %>>
                                         DAY <%= day %> - <%= escapeHtml(scheduleDateLabels.get(i)) %>
                                     </option>
                                 <% } %>
@@ -374,46 +381,67 @@
                     </form>
                 </section>
 
-                <section class="schedule-manage-list" aria-labelledby="scheduleManageListHeading">
+                <section class="schedule-manage-list" aria-labelledby="scheduleManageListHeading"
+                         data-schedule-manage-list>
                     <div class="schedule-timeline-heading">
                         <div class="schedule-card-title">
                             <span>MANAGE PLANS</span>
-                            <h2 id="scheduleManageListHeading">DAY <%= selectedDay %> 등록 일정 관리</h2>
+                            <h2 id="scheduleManageListHeading" data-schedule-manage-heading>
+                                DAY <%= selectedDay %> 등록 일정 관리
+                            </h2>
                         </div>
-                        <span class="schedule-count"><%= selectedScheduleCount %>개 일정</span>
+                        <span class="schedule-count" data-schedule-manage-count>
+                            <%= selectedScheduleCount %>개 일정
+                        </span>
                     </div>
 
-                    <% if (selectedScheduleDetails.isEmpty()) { %>
-                        <div class="schedule-manage-empty">
-                            <div class="trip-empty-icon" aria-hidden="true">+</div>
-                            <h3>DAY <%= selectedDay %>에 등록된 일정이 없습니다</h3>
-                            <p>왼쪽 폼에서 이 날짜의 세부 일정을 등록하세요.</p>
-                        </div>
-                    <% } else { %>
-                        <div class="schedule-manage-items">
-                            <% for (TripDetailDTO detail : selectedScheduleDetails) { %>
-                                <article class="schedule-manage-item">
-                                    <div>
-                                        <time><%= escapeHtml(detail.getVisitTimeValue()) %></time>
-                                        <strong><%= escapeHtml(detail.getPlaceName()) %></strong>
-                                        <span>
-                                            <%= escapeHtml(detail.getMemo()) %> ·
-                                            <%= escapeHtml(detail.getCostText()) %> ·
-                                            <%= detail.hasLocation() ? "위치 저장됨" : "위치 미등록" %>
-                                        </span>
-                                    </div>
-                                    <div class="schedule-manage-actions">
-                                        <a class="btn trip-edit-button"
-                                           href="${pageContext.request.contextPath}/trip-details?trip_id=<%= tripId %>&amp;day=<%= selectedDay %>&amp;action=editDetail&amp;detail_id=<%= detail.getDetailId() %>">수정</a>
-                                        <form action="${pageContext.request.contextPath}/trip-details" method="post">
-                                            <input type="hidden" name="action" value="deleteDetail">
-                                            <input type="hidden" name="trip_id" value="<%= tripId %>">
-                                            <input type="hidden" name="detail_id" value="<%= detail.getDetailId() %>">
-                                            <input type="hidden" name="day" value="<%= selectedDay %>">
-                                            <button class="btn schedule-delete-button" type="submit">삭제</button>
-                                        </form>
-                                    </div>
-                                </article>
+                    <% for (int i = 0; i < scheduleDates.size(); i++) {
+                        int manageDay = i + 1;
+                        String manageDate = scheduleDates.get(i);
+                        List<TripDetailDTO> dayDetails = new java.util.ArrayList<TripDetailDTO>();
+
+                        for (TripDetailDTO detail : allScheduleDetails) {
+                            if (manageDate.equals(detail.getScheduleDateValue())) {
+                                dayDetails.add(detail);
+                            }
+                        }
+                    %>
+                        <div data-schedule-day-panel="<%= manageDay %>"
+                             data-schedule-count="<%= dayDetails.size() %>"
+                             <%= manageDay == selectedDay ? "" : "hidden" %>>
+                            <% if (dayDetails.isEmpty()) { %>
+                                <div class="schedule-manage-empty">
+                                    <div class="trip-empty-icon" aria-hidden="true">+</div>
+                                    <h3>DAY <%= manageDay %>에 등록된 일정이 없습니다</h3>
+                                    <p>왼쪽 폼에서 이 날짜의 세부 일정을 등록하세요.</p>
+                                </div>
+                            <% } else { %>
+                                <div class="schedule-manage-items">
+                                    <% for (TripDetailDTO detail : dayDetails) { %>
+                                        <article class="schedule-manage-item">
+                                            <div>
+                                                <time><%= escapeHtml(detail.getVisitTimeValue()) %></time>
+                                                <strong><%= escapeHtml(detail.getPlaceName()) %></strong>
+                                                <span>
+                                                    <%= escapeHtml(detail.getMemo()) %> ·
+                                                    <%= escapeHtml(detail.getCostText()) %> ·
+                                                    <%= detail.hasLocation() ? "위치 저장됨" : "위치 미등록" %>
+                                                </span>
+                                            </div>
+                                            <div class="schedule-manage-actions">
+                                                <a class="btn trip-edit-button"
+                                                   href="${pageContext.request.contextPath}/trip-details?trip_id=<%= tripId %>&amp;day=<%= manageDay %>&amp;action=editDetail&amp;detail_id=<%= detail.getDetailId() %>">수정</a>
+                                                <form action="${pageContext.request.contextPath}/trip-details" method="post">
+                                                    <input type="hidden" name="action" value="deleteDetail">
+                                                    <input type="hidden" name="trip_id" value="<%= tripId %>">
+                                                    <input type="hidden" name="detail_id" value="<%= detail.getDetailId() %>">
+                                                    <input type="hidden" name="day" value="<%= manageDay %>">
+                                                    <button class="btn schedule-delete-button" type="submit">삭제</button>
+                                                </form>
+                                            </div>
+                                        </article>
+                                    <% } %>
+                                </div>
                             <% } %>
                         </div>
                     <% } %>
