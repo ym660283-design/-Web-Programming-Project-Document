@@ -331,6 +331,7 @@ public class TripDetailServlet extends HttpServlet {
         request.setAttribute("selectedDateLabel", selectedDateLabel);
         request.setAttribute("selectedScheduleDetails", selectedDetails);
         request.setAttribute("selectedScheduleCount", selectedDetails.size());
+        request.setAttribute("allScheduleDetails", details);
         request.setAttribute("scheduleDayCount", scheduleDates.size());
         request.setAttribute("scheduleDates", scheduleDates);
         request.setAttribute("scheduleDateLabels", scheduleDateLabels);
