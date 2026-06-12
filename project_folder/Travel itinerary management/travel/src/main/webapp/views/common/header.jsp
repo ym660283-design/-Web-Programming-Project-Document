@@ -19,7 +19,6 @@
           crossorigin="anonymous">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/map.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/location-modal.css">
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav class="navbar navbar-expand-lg sticky-top">

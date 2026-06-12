@@ -1,16 +1,4 @@
 (function () {
-    var locationPicker = {
-        map: null,
-        marker: null,
-        infoWindow: null,
-        geocoder: null,
-        pendingLocation: null,
-        placeInput: null,
-        latitudeInput: null,
-        longitudeInput: null,
-        resultsElement: null,
-        setStatus: null
-    };
 
     function escapeHtml(value) {
         return String(value || "")
@@ -65,189 +53,6 @@
         }
 
         return number.toFixed(7).replace(/0+$/, "").replace(/\.$/, "");
-    }
-
-    function setLocationStatus(text, tone) {
-        if (typeof locationPicker.setStatus === "function") {
-            locationPicker.setStatus(text, tone || "");
-        }
-    }
-
-    function resetLocationPreview(removeMarker) {
-        locationPicker.pendingLocation = null;
-
-        if (locationPicker.infoWindow) {
-            locationPicker.infoWindow.close();
-            locationPicker.infoWindow = null;
-        }
-
-        if (removeMarker && locationPicker.marker) {
-            locationPicker.marker.setMap(null);
-            locationPicker.marker = null;
-        }
-    }
-
-    function buildLocationPopupContent(location) {
-        var title = location.place || location.address || "선택한 지도 위치";
-        var description = location.address
-            || "위도 " + location.lat + " · 경도 " + location.lng;
-
-        return [
-            '<div class="trip-map-location-popup">',
-            "<strong>", escapeHtml(title), "</strong>",
-            "<span>", escapeHtml(description), "</span>",
-            '<button type="button" data-map-location-apply>이 위치 사용</button>',
-            "</div>"
-        ].join("");
-    }
-
-    function openLocationPopup(location) {
-        if (!locationPicker.map || !window.kakao || !window.kakao.maps) {
-            return;
-        }
-
-        var position = new window.kakao.maps.LatLng(location.lat, location.lng);
-        locationPicker.pendingLocation = location;
-
-        if (!locationPicker.marker) {
-            locationPicker.marker = new window.kakao.maps.Marker({
-                map: locationPicker.map,
-                position: position
-            });
-        } else {
-            locationPicker.marker.setMap(locationPicker.map);
-            locationPicker.marker.setPosition(position);
-        }
-
-        if (locationPicker.infoWindow) {
-            locationPicker.infoWindow.close();
-        }
-
-        locationPicker.infoWindow = new window.kakao.maps.InfoWindow({
-            content: buildLocationPopupContent(location),
-            removable: true
-        });
-        locationPicker.infoWindow.open(locationPicker.map, locationPicker.marker);
-    }
-
-    function applyLocationSelection() {
-        var location = locationPicker.pendingLocation;
-        if (!location || !locationPicker.latitudeInput || !locationPicker.longitudeInput) {
-            return;
-        }
-
-        locationPicker.latitudeInput.value = location.lat;
-        locationPicker.longitudeInput.value = location.lng;
-
-        if (locationPicker.placeInput && location.place) {
-            locationPicker.placeInput.value = location.place;
-        } else if (locationPicker.placeInput
-                && !locationPicker.placeInput.value.trim()
-                && location.address) {
-            locationPicker.placeInput.value = location.address;
-        }
-
-        if (locationPicker.resultsElement) {
-            locationPicker.resultsElement.hidden = true;
-            locationPicker.resultsElement.innerHTML = "";
-        }
-
-        if (locationPicker.infoWindow) {
-            locationPicker.infoWindow.close();
-        }
-
-        setLocationStatus("위치가 선택되었습니다. 등록하면 DB에 함께 저장됩니다.", "success");
-    }
-
-    function previewLocationSelection(location) {
-        if (!location.lat || !location.lng) {
-            return;
-        }
-
-        if (!locationPicker.map) {
-            locationPicker.pendingLocation = location;
-            applyLocationSelection();
-            return;
-        }
-
-        var position = new window.kakao.maps.LatLng(location.lat, location.lng);
-        locationPicker.map.setCenter(position);
-        if (typeof locationPicker.map.getLevel === "function"
-                && locationPicker.map.getLevel() > 4) {
-            locationPicker.map.setLevel(4);
-        }
-
-        openLocationPopup(location);
-        setLocationStatus("지도 팝업에서 '이 위치 사용'을 눌러 위치를 확정해주세요.", "");
-    }
-
-    function previewMapClickLocation(latLng) {
-        var location = {
-            place: "",
-            address: "",
-            lat: formatCoordinate(latLng.getLat()),
-            lng: formatCoordinate(latLng.getLng()),
-            source: "map"
-        };
-
-        if (!locationPicker.geocoder) {
-            previewLocationSelection(location);
-            return;
-        }
-
-        setLocationStatus("선택한 위치의 주소를 확인하고 있습니다.", "");
-        locationPicker.geocoder.coord2Address(location.lng, location.lat, function (results, status) {
-            var address = "";
-            if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
-                address = results[0].road_address
-                    ? results[0].road_address.address_name
-                    : "";
-                if (!address && results[0].address) {
-                    address = results[0].address.address_name;
-                }
-            }
-
-            location.address = address;
-            previewLocationSelection(location);
-        });
-    }
-
-    function setupLocationPicker(map) {
-        var panel = document.querySelector("[data-location-panel]");
-        if (!panel) {
-            return false;
-        }
-
-        locationPicker.map = map;
-        locationPicker.placeInput = document.getElementById("placeName");
-        locationPicker.latitudeInput = document.getElementById("latitude");
-        locationPicker.longitudeInput = document.getElementById("longitude");
-        locationPicker.resultsElement = panel.querySelector("[data-location-results]");
-
-        if (!locationPicker.latitudeInput || !locationPicker.longitudeInput) {
-            return false;
-        }
-
-        if (window.kakao.maps.services && window.kakao.maps.services.Geocoder) {
-            locationPicker.geocoder = new window.kakao.maps.services.Geocoder();
-        }
-
-        window.kakao.maps.event.addListener(map, "click", function (mouseEvent) {
-            previewMapClickLocation(mouseEvent.latLng);
-        });
-
-        return true;
-    }
-
-    function findLocationApplyButton(target) {
-        while (target && target !== document) {
-            if (target.getAttribute && target.hasAttribute("data-map-location-apply")) {
-                return target;
-            }
-            target = target.parentNode;
-        }
-
-        return null;
     }
 
     function toRadians(value) {
@@ -366,17 +171,10 @@
             center: defaultCenter,
             level: 7
         });
-        var locationPickerEnabled = setupLocationPicker(map);
 
         if (markers.length === 0) {
             centerMapByDestination(map, mapElement.dataset.destination || "");
-            setMapMessage(
-                messageElement,
-                locationPickerEnabled
-                    ? "지도에서 위치를 클릭하거나 아래 장소 위치 찾기로 일정 위치를 선택할 수 있습니다."
-                    : "위치가 저장된 세부 일정이 없으면 마커가 표시되지 않습니다.",
-                true
-            );
+            setMapMessage(messageElement, "위치가 저장된 세부 일정이 없으면 마커가 표시되지 않습니다.", true);
             renderRouteSummary(markers);
             return;
         }
@@ -642,104 +440,262 @@
         });
     }
 
-    function initializeLocationSearch(apiReady) {
-        var panel = document.querySelector("[data-location-panel]");
-        if (!panel) {
+    function initializeLocationSearch() {
+    }
+
+    window.TravelMap = {
+        getKakaoApi: getKakaoApi,
+        initializeTripMap: initializeTripMap,
+        initializeLocationSearch: initializeLocationSearch
+    };
+})();
+
+(function () {
+    if (!window.TravelMap) {
+        return;
+    }
+
+    function escapeHtml(value) {
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function formatCoordinate(value) {
+        var number = Number(value);
+        if (!isFinite(number)) {
+            return "";
+        }
+
+        return number.toFixed(7).replace(/0+$/, "").replace(/\.$/, "");
+    }
+
+    window.TravelMap.initializeLocationSearch = function (apiReady) {
+        var panel = document.querySelector("[data-location-modal-panel]");
+        var modal = document.querySelector("[data-location-modal]");
+
+        if (!panel || !modal) {
             return;
         }
 
         var placeInput = document.getElementById("placeName");
         var latitudeInput = document.getElementById("latitude");
         var longitudeInput = document.getElementById("longitude");
-        var button = document.getElementById("locationSearchButton");
+        var openButton = document.getElementById("locationSearchButton");
         var statusElement = panel.querySelector("[data-location-status]");
-        var resultsElement = panel.querySelector("[data-location-results]");
         var form = panel.closest("form");
+        var keywordInput = modal.querySelector("[data-location-modal-keyword]");
+        var searchButton = modal.querySelector("[data-location-modal-search]");
+        var modalStatusElement = modal.querySelector("[data-location-modal-status]");
+        var resultsElement = modal.querySelector("[data-location-modal-results]");
+        var mapElement = modal.querySelector("[data-location-modal-map]");
+        var selectedElement = modal.querySelector("[data-location-modal-selected]");
+        var applyButton = modal.querySelector("[data-location-modal-apply]");
+
+        var pickerMap = null;
+        var marker = null;
+        var infoWindow = null;
+        var geocoder = null;
+        var pendingLocation = null;
+        var lastFocusedElement = null;
 
         function setStatus(text, tone) {
+            if (!statusElement) {
+                return;
+            }
+
             statusElement.textContent = text;
             statusElement.dataset.tone = tone || "";
         }
 
-        locationPicker.placeInput = placeInput;
-        locationPicker.latitudeInput = latitudeInput;
-        locationPicker.longitudeInput = longitudeInput;
-        locationPicker.resultsElement = resultsElement;
-        locationPicker.setStatus = setStatus;
+        function setModalStatus(text, tone) {
+            if (!modalStatusElement) {
+                return;
+            }
 
-        function clearLocation() {
-            latitudeInput.value = "";
-            longitudeInput.value = "";
-            resetLocationPreview(true);
-            setStatus("장소 위치 찾기를 눌러 위치를 선택해주세요.", "");
+            modalStatusElement.textContent = text;
+            modalStatusElement.dataset.tone = tone || "";
         }
 
         function hasSavedLocation() {
             return latitudeInput.value.trim() !== "" && longitudeInput.value.trim() !== "";
         }
 
-        function updateInitialStatus() {
-            if (hasSavedLocation()) {
-                setStatus("저장된 위치 정보가 있습니다.", "success");
+        function readSavedLocation() {
+            if (!hasSavedLocation()) {
+                return null;
+            }
+
+            return {
+                place: placeInput.value.trim(),
+                address: "",
+                lat: formatCoordinate(latitudeInput.value),
+                lng: formatCoordinate(longitudeInput.value)
+            };
+        }
+
+        function setSelectedLocation(location) {
+            pendingLocation = location;
+
+            if (!selectedElement || !applyButton) {
                 return;
             }
 
-            setStatus("위치를 선택하면 지도 마커에 사용할 위치 정보가 저장됩니다.", "");
+            if (!location) {
+                selectedElement.textContent = "선택된 위치가 없습니다.";
+                applyButton.disabled = true;
+                return;
+            }
+
+            var title = location.place || location.address || "선택한 지도 위치";
+            var detail = location.address && location.address !== title
+                ? title + " · " + location.address
+                : title;
+
+            selectedElement.textContent = detail + " (" + location.lat + ", " + location.lng + ")";
+            applyButton.disabled = false;
         }
 
-        if (!apiReady || panel.dataset.mapReady !== "true" || !window.kakao.maps.services) {
-            button.disabled = true;
-            setStatus("Kakao 지도 API를 불러오지 못했습니다. 도메인 등록 또는 카카오맵 활성화 상태를 확인해주세요.", "warning");
-            return;
+        function clearPreview(removeMarker) {
+            setSelectedLocation(null);
+
+            if (infoWindow) {
+                infoWindow.close();
+                infoWindow = null;
+            }
+
+            if (removeMarker && marker) {
+                marker.setMap(null);
+                marker = null;
+            }
         }
 
-        updateInitialStatus();
+        function buildInfoWindowContent(location) {
+            var title = location.place || location.address || "선택한 지도 위치";
+            var description = location.address || "위도 " + location.lat + " · 경도 " + location.lng;
 
-        placeInput.addEventListener("input", clearLocation);
+            return [
+                '<div class="trip-map-location-popup">',
+                "<strong>", escapeHtml(title), "</strong>",
+                "<span>", escapeHtml(description), "</span>",
+                '<button type="button" data-location-modal-apply-popup>이 위치 사용</button>',
+                "</div>"
+            ].join("");
+        }
 
-        if (form) {
-            form.addEventListener("reset", function () {
-                setTimeout(function () {
-                    resultsElement.hidden = true;
-                    resultsElement.innerHTML = "";
-                    resetLocationPreview(true);
-                    updateInitialStatus();
-                }, 0);
+        function previewLocation(location) {
+            if (!location || !location.lat || !location.lng || !pickerMap) {
+                return;
+            }
+
+            var position = new window.kakao.maps.LatLng(location.lat, location.lng);
+            setSelectedLocation(location);
+
+            pickerMap.setCenter(position);
+            if (typeof pickerMap.getLevel === "function" && pickerMap.getLevel() > 4) {
+                pickerMap.setLevel(4);
+            }
+
+            if (!marker) {
+                marker = new window.kakao.maps.Marker({
+                    map: pickerMap,
+                    position: position
+                });
+            } else {
+                marker.setMap(pickerMap);
+                marker.setPosition(position);
+            }
+
+            if (infoWindow) {
+                infoWindow.close();
+            }
+
+            infoWindow = new window.kakao.maps.InfoWindow({
+                content: buildInfoWindowContent(location),
+                removable: true
+            });
+            infoWindow.open(pickerMap, marker);
+            setModalStatus("선택한 위치를 확인한 뒤 이 위치 사용을 눌러주세요.", "");
+        }
+
+        function previewClickedLocation(latLng) {
+            var location = {
+                place: "",
+                address: "",
+                lat: formatCoordinate(latLng.getLat()),
+                lng: formatCoordinate(latLng.getLng())
+            };
+
+            if (!geocoder) {
+                previewLocation(location);
+                return;
+            }
+
+            setModalStatus("선택한 위치의 주소를 확인하고 있습니다.", "");
+            geocoder.coord2Address(location.lng, location.lat, function (results, status) {
+                var address = "";
+                if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
+                    address = results[0].road_address ? results[0].road_address.address_name : "";
+                    if (!address && results[0].address) {
+                        address = results[0].address.address_name;
+                    }
+                }
+
+                location.address = address;
+                previewLocation(location);
             });
         }
 
-        button.addEventListener("click", function () {
-            var keyword = placeInput.value.trim();
+        function centerMapByDestination() {
             var destination = panel.dataset.destination || "";
-
-            if (!keyword) {
-                setStatus("방문 장소를 먼저 입력해주세요.", "warning");
-                placeInput.focus();
+            if (!destination || !window.kakao.maps.services || !pickerMap) {
                 return;
             }
 
-            var searchKeyword = destination && keyword.indexOf(destination) === -1
-                ? destination + " " + keyword
-                : keyword;
-
-            setStatus("장소 위치를 검색하고 있습니다.", "");
-            resultsElement.hidden = true;
-            resultsElement.innerHTML = "";
-
             var places = new window.kakao.maps.services.Places();
-            places.keywordSearch(searchKeyword, function (results, searchStatus) {
-                if (searchStatus !== window.kakao.maps.services.Status.OK || !results.length) {
-                    setStatus("검색 결과가 없습니다. 장소명을 조금 더 구체적으로 입력해주세요.", "warning");
+            places.keywordSearch(destination, function (results, status) {
+                if (status !== window.kakao.maps.services.Status.OK || !results.length) {
                     return;
                 }
 
-                renderLocationResults(results.slice(0, 5));
+                pickerMap.setCenter(new window.kakao.maps.LatLng(results[0].y, results[0].x));
+                pickerMap.setLevel(6);
             });
-        });
+        }
 
-        function renderLocationResults(results) {
+        function ensurePickerMap(callback) {
+            var defaultCenter = new window.kakao.maps.LatLng(37.566826, 126.978656);
+
+            if (!pickerMap) {
+                pickerMap = new window.kakao.maps.Map(mapElement, {
+                    center: defaultCenter,
+                    level: 5
+                });
+
+                if (window.kakao.maps.services.Geocoder) {
+                    geocoder = new window.kakao.maps.services.Geocoder();
+                }
+
+                window.kakao.maps.event.addListener(pickerMap, "click", function (mouseEvent) {
+                    previewClickedLocation(mouseEvent.latLng);
+                });
+            }
+
+            window.setTimeout(function () {
+                pickerMap.relayout();
+                if (typeof callback === "function") {
+                    callback();
+                }
+            }, 0);
+        }
+
+        function renderResults(results) {
             resultsElement.innerHTML = results.map(function (result, index) {
                 var address = result.road_address_name || result.address_name || "";
+
                 return [
                     '<button class="schedule-location-result" type="button"',
                     ' data-index="', index, '"',
@@ -754,35 +710,187 @@
             }).join("");
 
             resultsElement.hidden = false;
-            setStatus("검색 결과에서 실제 방문 장소를 선택해주세요.", "");
+            setModalStatus("검색 결과에서 실제 방문 장소를 선택해주세요.", "");
 
             Array.prototype.slice.call(resultsElement.querySelectorAll(".schedule-location-result"))
                 .forEach(function (resultButton) {
                     resultButton.addEventListener("click", function () {
-                        previewLocationSelection({
+                        previewLocation({
                             place: resultButton.dataset.place || "",
                             address: resultButton.dataset.address || "",
                             lat: formatCoordinate(resultButton.dataset.lat),
-                            lng: formatCoordinate(resultButton.dataset.lng),
-                            source: "search"
+                            lng: formatCoordinate(resultButton.dataset.lng)
                         });
                     });
                 });
         }
-    }
 
-    document.addEventListener("click", function (event) {
-        if (!findLocationApplyButton(event.target)) {
+        function buildSearchKeyword(keyword) {
+            var destination = panel.dataset.destination || "";
+            return destination && keyword.indexOf(destination) === -1
+                ? destination + " " + keyword
+                : keyword;
+        }
+
+        function searchPlaces() {
+            var keyword = keywordInput.value.trim();
+
+            if (!keyword) {
+                setModalStatus("방문 장소를 먼저 입력해주세요.", "warning");
+                keywordInput.focus();
+                return;
+            }
+
+            clearPreview(true);
+            setModalStatus("장소 위치를 검색하고 있습니다.", "");
+            resultsElement.hidden = true;
+            resultsElement.innerHTML = "";
+
+            var places = new window.kakao.maps.services.Places();
+            places.keywordSearch(buildSearchKeyword(keyword), function (results, status) {
+                if (status !== window.kakao.maps.services.Status.OK || !results.length) {
+                    setModalStatus("검색 결과가 없습니다. 장소명을 조금 더 구체적으로 입력해주세요.", "warning");
+                    return;
+                }
+
+                renderResults(results.slice(0, 6));
+            });
+        }
+
+        function closeModal() {
+            modal.hidden = true;
+            modal.setAttribute("aria-hidden", "true");
+            document.body.classList.remove("schedule-location-modal-open");
+
+            if (infoWindow) {
+                infoWindow.close();
+            }
+
+            if (lastFocusedElement && typeof lastFocusedElement.focus === "function") {
+                lastFocusedElement.focus();
+            }
+        }
+
+        function openModal() {
+            lastFocusedElement = document.activeElement;
+            modal.hidden = false;
+            modal.setAttribute("aria-hidden", "false");
+            document.body.classList.add("schedule-location-modal-open");
+            keywordInput.value = placeInput.value.trim();
+            resultsElement.hidden = true;
+            resultsElement.innerHTML = "";
+            setModalStatus("검색 결과에서 장소를 선택하거나 지도에서 위치를 클릭하세요.", "");
+            clearPreview(true);
+
+            ensurePickerMap(function () {
+                var savedLocation = readSavedLocation();
+                if (savedLocation) {
+                    previewLocation(savedLocation);
+                    setModalStatus("현재 저장된 위치입니다. 다른 장소를 검색할 수 있습니다.", "success");
+                } else {
+                    centerMapByDestination();
+                    if (keywordInput.value.trim()) {
+                        searchPlaces();
+                    }
+                }
+
+                keywordInput.focus();
+            });
+        }
+
+        function applySelection() {
+            if (!pendingLocation) {
+                return;
+            }
+
+            latitudeInput.value = pendingLocation.lat;
+            longitudeInput.value = pendingLocation.lng;
+
+            if (pendingLocation.place) {
+                placeInput.value = pendingLocation.place;
+            } else if (!placeInput.value.trim() && pendingLocation.address) {
+                placeInput.value = pendingLocation.address;
+            }
+
+            setStatus("위치가 선택되었습니다. 등록하면 DB에 함께 저장됩니다.", "success");
+            closeModal();
+        }
+
+        function clearLocation() {
+            latitudeInput.value = "";
+            longitudeInput.value = "";
+            clearPreview(true);
+            setStatus("장소 위치 선택을 눌러 위치를 선택해주세요.", "");
+        }
+
+        function updateInitialStatus() {
+            if (hasSavedLocation()) {
+                setStatus("저장된 위치 정보가 있습니다.", "success");
+                return;
+            }
+
+            setStatus("위치를 선택하면 지도 마커에 사용할 위치 정보가 저장됩니다.", "");
+        }
+
+        if (!placeInput || !latitudeInput || !longitudeInput || !openButton
+                || !keywordInput || !searchButton || !resultsElement
+                || !mapElement || !selectedElement || !applyButton) {
+            if (openButton) {
+                openButton.disabled = true;
+            }
+            setStatus("장소 위치 선택 창을 초기화하지 못했습니다.", "warning");
             return;
         }
 
-        event.preventDefault();
-        applyLocationSelection();
-    });
+        if (!apiReady || panel.dataset.mapReady !== "true" || !window.kakao.maps.services) {
+            openButton.disabled = true;
+            setStatus("Kakao 지도 API를 불러오지 못했습니다. 도메인 등록 또는 카카오맵 활성화 상태를 확인해주세요.", "warning");
+            return;
+        }
 
-    window.TravelMap = {
-        getKakaoApi: getKakaoApi,
-        initializeTripMap: initializeTripMap,
-        initializeLocationSearch: initializeLocationSearch
+        updateInitialStatus();
+
+        openButton.addEventListener("click", openModal);
+        searchButton.addEventListener("click", searchPlaces);
+        applyButton.addEventListener("click", applySelection);
+        placeInput.addEventListener("input", clearLocation);
+
+        keywordInput.addEventListener("keydown", function (event) {
+            if (event.key !== "Enter") {
+                return;
+            }
+
+            event.preventDefault();
+            searchPlaces();
+        });
+
+        modal.addEventListener("click", function (event) {
+            if (event.target.closest("[data-location-modal-close]")) {
+                closeModal();
+                return;
+            }
+
+            if (event.target.closest("[data-location-modal-apply-popup]")) {
+                event.preventDefault();
+                applySelection();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && !modal.hidden) {
+                closeModal();
+            }
+        });
+
+        if (form) {
+            form.addEventListener("reset", function () {
+                window.setTimeout(function () {
+                    resultsElement.hidden = true;
+                    resultsElement.innerHTML = "";
+                    clearPreview(true);
+                    updateInitialStatus();
+                }, 0);
+            });
+        }
     };
 })();

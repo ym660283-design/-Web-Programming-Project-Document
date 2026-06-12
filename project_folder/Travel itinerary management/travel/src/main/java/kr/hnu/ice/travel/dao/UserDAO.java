@@ -2,6 +2,7 @@ package kr.hnu.ice.travel.dao;
 
 import kr.hnu.ice.travel.dto.UserDTO;
 import kr.hnu.ice.travel.util.DBUtil;
+import kr.hnu.ice.travel.util.PasswordUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,7 +32,7 @@ public class UserDAO {
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, user.getLoginId());
-            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(2, PasswordUtil.hash(user.getPassword()));
             preparedStatement.setString(3, user.getUserName());
             preparedStatement.setString(4, user.getEmail());
             preparedStatement.executeUpdate();
@@ -39,21 +40,42 @@ public class UserDAO {
     }
 
     public UserDTO findByLoginIdAndPassword(String loginId, String password) throws SQLException {
-        String sql = "SELECT user_id, login_id, user_name, email, created_at "
-                + "FROM users WHERE login_id = ? AND password = ?";
+        String sql = "SELECT user_id, login_id, password, user_name, email, created_at "
+                + "FROM users WHERE login_id = ?";
 
         try (Connection connection = DBUtil.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
             preparedStatement.setString(1, loginId);
-            preparedStatement.setString(2, password);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return mapUser(resultSet);
+                if (!resultSet.next()) {
+                    return null;
                 }
-                return null;
+
+                String storedPassword = resultSet.getString("password");
+                if (!PasswordUtil.matches(password, storedPassword)) {
+                    return null;
+                }
+
+                if (PasswordUtil.needsRehash(storedPassword)) {
+                    updatePasswordHash(loginId, PasswordUtil.hash(password));
+                }
+
+                return mapUser(resultSet);
             }
+        }
+    }
+
+    private void updatePasswordHash(String loginId, String passwordHash) throws SQLException {
+        String sql = "UPDATE users SET password = ? WHERE login_id = ?";
+
+        try (Connection connection = DBUtil.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, passwordHash);
+            preparedStatement.setString(2, loginId);
+            preparedStatement.executeUpdate();
         }
     }
 

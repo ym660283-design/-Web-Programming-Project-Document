@@ -2,7 +2,6 @@ package kr.hnu.ice.travel.controller;
 
 import kr.hnu.ice.travel.dao.UserDAO;
 import kr.hnu.ice.travel.dto.UserDTO;
-import kr.hnu.ice.travel.util.SessionNames;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -19,6 +18,7 @@ import java.util.regex.Pattern;
 @WebServlet(urlPatterns = {"/login", "/logout", "/register", "/user/check-login-id"})
 public class UserServlet extends HttpServlet {
     private static final String PENDING_SHARE_CODE = "pendingShareCode";
+    private static final String LOGIN_USER_SESSION = "loginUser";
     private static final String LOGIN_VIEW = "/views/user/login.jsp";
     private static final String REGISTER_VIEW = "/views/user/register.jsp";
     private static final String TRIP_LIST_PATH = "/trips";
@@ -32,7 +32,7 @@ public class UserServlet extends HttpServlet {
         if (session == null) {
             return null;
         }
-        return (UserDTO) session.getAttribute(SessionNames.LOGIN_USER);
+        return (UserDTO) session.getAttribute(LOGIN_USER_SESSION);
     }
 
     public static void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -95,7 +95,7 @@ public class UserServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if (session != null && session.getAttribute(SessionNames.LOGIN_USER) != null) {
+        if (session != null && session.getAttribute(LOGIN_USER_SESSION) != null) {
             response.sendRedirect(request.getContextPath() + TRIP_LIST_PATH);
             return;
         }
@@ -109,7 +109,7 @@ public class UserServlet extends HttpServlet {
 
         HttpSession session = request.getSession(false);
 
-        if (session != null && session.getAttribute(SessionNames.LOGIN_USER) != null) {
+        if (session != null && session.getAttribute(LOGIN_USER_SESSION) != null) {
             response.sendRedirect(request.getContextPath() + TRIP_LIST_PATH);
             return;
         }
@@ -133,7 +133,7 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            request.getSession(true).setAttribute(SessionNames.LOGIN_USER, loginUser);
+            request.getSession(true).setAttribute(LOGIN_USER_SESSION, loginUser);
             String pendingShareCode = (String) request.getSession()
                     .getAttribute(PENDING_SHARE_CODE);
             if (pendingShareCode != null && !pendingShareCode.trim().isEmpty()) {
