@@ -31,6 +31,12 @@
                 </div>
             <% } %>
 
+            <% if ("1".equals(request.getParameter("registered"))) { %>
+                <div class="alert alert-success" role="alert">
+                    회원가입이 완료되었습니다. 로그인해주세요.
+                </div>
+            <% } %>
+
             <form id="loginForm"
                   action="${pageContext.request.contextPath}/login"
                   method="post"

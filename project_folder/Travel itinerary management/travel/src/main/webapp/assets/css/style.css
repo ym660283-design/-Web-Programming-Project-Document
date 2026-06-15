@@ -1573,6 +1573,220 @@ body {
     box-shadow: 0 0.35rem 0.9rem rgba(26, 22, 18, 0.24);
 }
 
+.trip-map-location-popup {
+    min-width: 200px;
+    padding: 0.8rem;
+    color: var(--ink);
+    font-family: "Noto Sans KR", sans-serif;
+}
+
+.trip-map-location-popup strong,
+.trip-map-location-popup span {
+    display: block;
+}
+
+.trip-map-location-popup strong {
+    margin-bottom: 0.25rem;
+    font-size: 0.82rem;
+}
+
+.trip-map-location-popup span {
+    color: #746b65;
+    font-size: 0.68rem;
+    line-height: 1.45;
+}
+
+.trip-map-location-popup button {
+    width: 100%;
+    margin-top: 0.65rem;
+    padding: 0.5rem 0.65rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background-color: var(--terracotta);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.trip-map-location-popup button:hover,
+.trip-map-location-popup button:focus {
+    background-color: #a94f3b;
+}
+
+body.schedule-location-modal-open {
+    overflow: hidden;
+}
+
+.schedule-location-modal[hidden] {
+    display: none;
+}
+
+.schedule-location-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1080;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.schedule-location-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(26, 22, 18, 0.48);
+}
+
+.schedule-location-dialog {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    width: min(920px, calc(100vw - 2rem));
+    max-height: calc(100vh - 2rem);
+    overflow: hidden;
+    border: 1px solid var(--sand-dark);
+    border-radius: 0.8rem;
+    background-color: var(--white);
+    box-shadow: 0 1.4rem 3.4rem rgba(26, 22, 18, 0.24);
+}
+
+.schedule-location-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.35rem 1rem;
+    border-bottom: 1px solid var(--sand-dark);
+}
+
+.schedule-location-modal-header span {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--terracotta);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.schedule-location-modal-header h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+}
+
+.schedule-location-modal-close {
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid var(--sand-dark);
+    border-radius: 50%;
+    background-color: var(--sand);
+    color: var(--ink);
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.schedule-location-modal-close:hover,
+.schedule-location-modal-close:focus {
+    border-color: var(--terracotta);
+    color: var(--terracotta);
+}
+
+.schedule-location-search {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.6rem;
+    padding: 1rem 1.35rem 0;
+}
+
+.schedule-location-dialog > .schedule-location-status {
+    padding: 0 1.35rem;
+}
+
+.schedule-location-modal-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
+    gap: 0.9rem;
+    min-height: 360px;
+    overflow: hidden;
+    padding: 0 1.35rem 1rem;
+}
+
+.schedule-location-modal-map {
+    min-height: 360px;
+    overflow: hidden;
+    border: 1px solid var(--sand-dark);
+    border-radius: 0.65rem;
+    background-color: #e7ece7;
+}
+
+.schedule-location-modal-results {
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 0.2rem;
+}
+
+.schedule-location-modal-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.9rem;
+    align-items: center;
+    padding: 1rem 1.35rem 1.25rem;
+    border-top: 1px solid var(--sand-dark);
+    background-color: rgba(245, 240, 232, 0.55);
+}
+
+.schedule-location-modal-footer p {
+    margin: 0;
+    overflow-wrap: anywhere;
+    color: #746b65;
+    font-size: 0.76rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.schedule-location-modal-footer .btn:disabled {
+    border-color: var(--sand-dark);
+    background-color: var(--sand-dark);
+    color: #8a7f77;
+}
+
+@media (max-width: 768px) {
+    .schedule-location-modal {
+        align-items: stretch;
+        padding: 0.75rem;
+    }
+
+    .schedule-location-dialog {
+        width: 100%;
+        max-height: calc(100vh - 1.5rem);
+    }
+
+    .schedule-location-search,
+    .schedule-location-modal-footer {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-location-modal-body {
+        grid-template-columns: 1fr;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .schedule-location-modal-map {
+        min-height: 280px;
+    }
+
+    .schedule-location-modal-results {
+        max-height: 220px;
+    }
+
+    .schedule-location-modal-footer .btn {
+        width: 100%;
+    }
+}
+
 .trip-route-summary {
     padding: 1.25rem 1.75rem 1.5rem;
     border-top: 1px solid var(--sand-dark);

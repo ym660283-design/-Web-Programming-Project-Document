@@ -182,7 +182,7 @@ public class UserServlet extends HttpServlet {
             user.setEmail(email);
 
             userDAO.insert(user);
-            response.sendRedirect(request.getContextPath() + "/register?registered=true");
+            response.sendRedirect(request.getContextPath() + "/login?registered=1");
         } catch (SQLException e) {
             request.setAttribute("errorMessage", "회원가입 처리 중 오류가 발생했습니다.");
             request.getRequestDispatcher(REGISTER_VIEW).forward(request, response);

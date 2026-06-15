@@ -32,12 +32,6 @@
                     <%= request.getAttribute("errorMessage") %>
                 </div>
             <% } %>
-            <% if ("true".equals(request.getParameter("registered"))) { %>
-                <div class="alert alert-success" role="alert">
-                    회원가입이 완료되었습니다.
-                </div>
-            <% } %>
-
             <form id="registerForm"
                   action="${pageContext.request.contextPath}/register"
                   method="post"
