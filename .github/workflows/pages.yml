@@ -1,0 +1,60 @@
+name: Build presentation pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+      - docs/**
+      - scripts/build-pages.mjs
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install page build tools
+        run: npm install --no-save @marp-team/marp-cli marked
+
+      - name: Build README page
+        run: node scripts/build-pages.mjs
+
+      - name: Build Marp slides
+        run: |
+          npx marp docs/0-project-overview.md -o _site/docs/0-project-overview.html --html --allow-local-files
+          npx marp docs/1-requirement-analysis.md -o _site/docs/1-requirement-analysis.html --html --allow-local-files
+          npx marp docs/2-project-structure.md -o _site/docs/2-project-structure.html --html --allow-local-files
+          npx marp docs/3-feature-Implementation.md -o _site/docs/3-feature-Implementation.html --html --allow-local-files
+          npx marp docs/4-summary.md -o _site/docs/4-summary.html --html --allow-local-files
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
