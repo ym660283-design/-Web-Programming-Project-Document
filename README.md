@@ -1,14 +1,3 @@
-## 발표자료 바로가기
-
-- [0. 프로젝트 개요](./docs/0-project-overview.html)
-- [1. 요구사항 분석](./docs/1-requirement-analysis.html)
-- [2. 프로젝트 구조](./docs/2-project-structure.html)
-- [3. 기능 구현](./docs/3-feature-Implementation.html)
-- [4. 요약](./docs/4-summary.html)
-- [5. AI 활용 내역](./docs/5-AI-prompts.html)
-
----
-
 # 1 — 프로젝트 소개
 
 ## 프로젝트명
@@ -26,6 +15,7 @@
 - 사용자들이 여행 일정을 날짜별로 체계적으로 관리하고 참여자 간 실시간으로 공유할 수 있다.
 - 지도 기반 위치 표시 기능을 통해 여행 동선을 직관적으로 확인할 수 있다.
 - 일정 공유 링크 기능을 통해 외부 사용자와도 쉽게 여행 계획을 공유할 수 있다.
+- JSP/Servlet 기반 MVC(Model2) 구조 이해 및 데이터베이스 연동 능력을 향상시킬 수 있다.
 
 # 2 — 프로젝트 배경 및 범위
 
