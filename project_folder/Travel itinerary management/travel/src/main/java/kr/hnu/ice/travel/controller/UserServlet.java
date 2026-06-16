@@ -15,6 +15,10 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
+/**
+ * 작성자: 김용민, 김준섭
+ * 기능 설명: 회원가입, 로그인, 로그아웃과 아이디 중복 확인 요청을 처리하는 서블릿입니다.
+ */
 @WebServlet(urlPatterns = {"/login", "/logout", "/register", "/user/check-login-id"})
 public class UserServlet extends HttpServlet {
     private static final String PENDING_SHARE_CODE = "pendingShareCode";

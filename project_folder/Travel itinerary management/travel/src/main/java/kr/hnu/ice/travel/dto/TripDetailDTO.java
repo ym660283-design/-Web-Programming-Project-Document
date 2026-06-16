@@ -5,6 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 작성자: 김용민
+ * 기능 설명: 여행 세부 일정 정보를 화면과 데이터 계층 사이에서 전달하는 DTO 클래스입니다.
+ */
 public class TripDetailDTO {
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
 

@@ -2,6 +2,10 @@ package kr.hnu.ice.travel.dto;
 
 import java.time.LocalDateTime;
 
+/**
+ * 작성자: 김용민
+ * 기능 설명: 사용자 계정 정보를 화면과 데이터 계층 사이에서 전달하는 DTO 클래스입니다.
+ */
 public class UserDTO {
     private int userId;
     private String loginId;

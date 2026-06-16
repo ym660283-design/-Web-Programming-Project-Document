@@ -31,6 +31,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/**
+ * 작성자: 김용민, 김준섭
+ * 기능 설명: 여행 세부 일정 조회, 등록, 수정, 삭제와 경로 조회 요청을 처리하는 서블릿입니다.
+ */
 @WebServlet(urlPatterns = {"/trip-details", "/trip-route"})
 public class TripDetailServlet extends HttpServlet {
     private static final String DETAIL_VIEW = "/views/trip/detail.jsp";

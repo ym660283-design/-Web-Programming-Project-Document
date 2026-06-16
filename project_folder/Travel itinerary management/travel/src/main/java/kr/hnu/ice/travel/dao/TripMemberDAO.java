@@ -11,6 +11,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 작성자: 김준섭
+ * 기능 설명: 여행 참여자 데이터의 조회, 추가, 권한 변경, 삭제를 담당하는 DAO 클래스입니다.
+ */
 public class TripMemberDAO {
     public List<TripMemberDTO> findByTripId(int tripId) throws SQLException {
         String sql = "SELECT tm.member_id, tm.trip_id, tm.user_id, tm.role, tm.joined_at, "

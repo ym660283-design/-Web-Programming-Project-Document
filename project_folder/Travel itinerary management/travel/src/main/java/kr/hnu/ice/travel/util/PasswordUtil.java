@@ -9,6 +9,10 @@ import java.util.Base64;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
+/**
+ * 작성자: 김용민
+ * 기능 설명: 비밀번호 해시 생성과 검증을 담당하는 유틸리티 클래스입니다.
+ */
 public final class PasswordUtil {
     private static final String PREFIX = "pbkdf2";
     private static final String ALGORITHM = "PBKDF2WithHmacSHA256";

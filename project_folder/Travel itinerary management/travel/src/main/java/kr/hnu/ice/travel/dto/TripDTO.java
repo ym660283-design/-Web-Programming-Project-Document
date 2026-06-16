@@ -6,6 +6,10 @@ import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 
+/**
+ * 작성자: 김용민, 김준섭
+ * 기능 설명: 여행 일정 기본 정보를 화면과 데이터 계층 사이에서 전달하는 DTO 클래스입니다.
+ */
 public class TripDTO {
     private static final DateTimeFormatter PERIOD_FORMATTER = DateTimeFormatter.ofPattern("yyyy.MM.dd");
 

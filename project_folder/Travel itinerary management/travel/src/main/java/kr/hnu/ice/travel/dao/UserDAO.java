@@ -10,6 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+/**
+ * 작성자: 김용민, 김준섭
+ * 기능 설명: 사용자 계정 데이터의 조회와 저장을 담당하는 DAO 클래스입니다.
+ */
 public class UserDAO {
     public boolean existsByLoginId(String loginId) throws SQLException {
         String sql = "SELECT COUNT(*) FROM users WHERE login_id = ?";

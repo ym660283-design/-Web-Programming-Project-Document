@@ -1,20 +1,20 @@
 (function () {
     function initializeScheduleDateSelection() {
-        var scheduleDateSelect = document.querySelector("[data-schedule-date-select]");
-        var manageList = document.querySelector("[data-schedule-manage-list]");
+        const scheduleDateSelect = document.querySelector("[data-schedule-date-select]");
+        const manageList = document.querySelector("[data-schedule-manage-list]");
 
         if (!scheduleDateSelect || !manageList) {
             return;
         }
 
         function updateScheduleManageList() {
-            var selectedOption = scheduleDateSelect.options[scheduleDateSelect.selectedIndex];
-            var selectedDay = selectedOption ? selectedOption.getAttribute("data-day") : "";
-            var selectedPanel = manageList.querySelector(
+            const selectedOption = scheduleDateSelect.options[scheduleDateSelect.selectedIndex];
+            const selectedDay = selectedOption ? selectedOption.getAttribute("data-day") : "";
+            const selectedPanel = manageList.querySelector(
                 "[data-schedule-day-panel='" + selectedDay + "']"
             );
-            var heading = manageList.querySelector("[data-schedule-manage-heading]");
-            var count = manageList.querySelector("[data-schedule-manage-count]");
+            const heading = manageList.querySelector("[data-schedule-manage-heading]");
+            const count = manageList.querySelector("[data-schedule-manage-count]");
 
             if (!selectedDay || !selectedPanel || !heading || !count) {
                 return;

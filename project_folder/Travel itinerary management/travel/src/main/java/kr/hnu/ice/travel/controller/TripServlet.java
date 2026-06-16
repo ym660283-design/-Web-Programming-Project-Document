@@ -16,6 +16,10 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 작성자: 김용민, 김준섭
+ * 기능 설명: 여행 일정 목록 조회, 생성, 수정, 삭제 요청을 처리하는 서블릿입니다.
+ */
 @WebServlet("/trips")
 public class TripServlet extends HttpServlet {
     private static final int SHARE_CODE_RETRY_LIMIT = 5;

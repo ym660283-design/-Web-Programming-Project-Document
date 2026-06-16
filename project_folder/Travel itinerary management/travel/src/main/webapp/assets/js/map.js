@@ -47,7 +47,7 @@
     }
 
     function formatCoordinate(value) {
-        var number = Number(value);
+        const number = Number(value);
         if (!isFinite(number)) {
             return "";
         }
@@ -60,15 +60,15 @@
     }
 
     function getDistanceKm(from, to) {
-        var earthRadiusKm = 6371;
-        var latitudeDistance = toRadians(to.lat - from.lat);
-        var longitudeDistance = toRadians(to.lng - from.lng);
-        var startLatitude = toRadians(from.lat);
-        var endLatitude = toRadians(to.lat);
-        var a = Math.sin(latitudeDistance / 2) * Math.sin(latitudeDistance / 2)
+        const earthRadiusKm = 6371;
+        const latitudeDistance = toRadians(to.lat - from.lat);
+        const longitudeDistance = toRadians(to.lng - from.lng);
+        const startLatitude = toRadians(from.lat);
+        const endLatitude = toRadians(to.lat);
+        const a = Math.sin(latitudeDistance / 2) * Math.sin(latitudeDistance / 2)
             + Math.cos(startLatitude) * Math.cos(endLatitude)
             * Math.sin(longitudeDistance / 2) * Math.sin(longitudeDistance / 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         return earthRadiusKm * c;
     }
@@ -94,7 +94,7 @@
     }
 
     function estimateTravelMinutes(distanceKm) {
-        var carSpeedKmh = 30;
+        const carSpeedKmh = 30;
         return Math.max(1, Math.round(distanceKm / carSpeedKmh * 60));
     }
 
@@ -103,8 +103,8 @@
             return minutes + "분";
         }
 
-        var hours = Math.floor(minutes / 60);
-        var remainingMinutes = minutes % 60;
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
         return remainingMinutes === 0
             ? hours + "시간"
             : hours + "시간 " + remainingMinutes + "분";
@@ -115,13 +115,13 @@
     }
 
     function parseScheduleMinutes(value) {
-        var match = String(value || "").match(/^(\d{1,2}):(\d{2})/);
+        const match = String(value || "").match(/^(\d{1,2}):(\d{2})/);
         if (!match) {
             return null;
         }
 
-        var hours = Number(match[1]);
-        var minutes = Number(match[2]);
+        const hours = Number(match[1]);
+        const minutes = Number(match[2]);
         if (!isFinite(hours) || !isFinite(minutes)) {
             return null;
         }
@@ -130,8 +130,8 @@
     }
 
     function getScheduleGapMinutes(from, to) {
-        var fromMinutes = parseScheduleMinutes(from.time);
-        var toMinutes = parseScheduleMinutes(to.time);
+        const fromMinutes = parseScheduleMinutes(from.time);
+        const toMinutes = parseScheduleMinutes(to.time);
         if (fromMinutes === null || toMinutes === null || toMinutes < fromMinutes) {
             return null;
         }
@@ -140,21 +140,21 @@
     }
 
     function addScheduleTiming(leg, travelMinutes) {
-        var gapMinutes = getScheduleGapMinutes(leg.from, leg.to);
+        const gapMinutes = getScheduleGapMinutes(leg.from, leg.to);
         leg.gapText = gapMinutes === null ? "" : formatMinutes(gapMinutes);
         leg.isTooTight = gapMinutes !== null && gapMinutes < travelMinutes;
         return leg;
     }
 
     function initializeTripMap(apiReady) {
-        var mapElement = document.getElementById("tripMap");
+        const mapElement = document.getElementById("tripMap");
         if (!mapElement) {
             return;
         }
 
-        var markers = readMarkers();
-        var markerCountElement = document.querySelector("[data-trip-map-marker-count]");
-        var messageElement = document.querySelector("[data-trip-map-message]");
+        const markers = readMarkers();
+        const markerCountElement = document.querySelector("[data-trip-map-marker-count]");
+        const messageElement = document.querySelector("[data-trip-map-message]");
 
         if (markerCountElement) {
             markerCountElement.textContent = String(markers.length);
@@ -166,8 +166,8 @@
             return;
         }
 
-        var defaultCenter = new window.kakao.maps.LatLng(37.566826, 126.978656);
-        var map = new window.kakao.maps.Map(mapElement, {
+        const defaultCenter = new window.kakao.maps.LatLng(37.566826, 126.978656);
+        const map = new window.kakao.maps.Map(mapElement, {
             center: defaultCenter,
             level: 7
         });
@@ -181,14 +181,14 @@
 
         setMapMessage(messageElement, "", false);
 
-        var bounds = new window.kakao.maps.LatLngBounds();
-        var routePath = markers.map(function (item) {
+        const bounds = new window.kakao.maps.LatLngBounds();
+        const routePath = markers.map(function (item) {
             return new window.kakao.maps.LatLng(item.lat, item.lng);
         });
 
         markers.forEach(function (item, index) {
-            var position = new window.kakao.maps.LatLng(item.lat, item.lng);
-            var marker = new window.kakao.maps.Marker({
+            const position = new window.kakao.maps.LatLng(item.lat, item.lng);
+            const marker = new window.kakao.maps.Marker({
                 map: map,
                 position: position
             });
@@ -199,7 +199,7 @@
                 content: '<span class="trip-map-order-label">' + (index + 1) + '</span>'
             });
 
-            var content = [
+            const content = [
                 '<div class="trip-map-info-window">',
                 "<strong>", escapeHtml(item.place), "</strong>",
                 "<span>", escapeHtml(item.time), " · ", escapeHtml(item.cost), "</span>",
@@ -207,7 +207,7 @@
                 "</div>"
             ].join("");
 
-            var infoWindow = new window.kakao.maps.InfoWindow({
+            const infoWindow = new window.kakao.maps.InfoWindow({
                 content: content,
                 removable: true
             });
@@ -254,7 +254,7 @@
             return;
         }
 
-        var bounds = new window.kakao.maps.LatLngBounds();
+        const bounds = new window.kakao.maps.LatLngBounds();
         path.forEach(function (position) {
             bounds.extend(position);
         });
@@ -262,15 +262,15 @@
     }
 
     function buildStraightRouteSummary(markers) {
-        var totalDistance = 0;
-        var totalMinutes = 0;
-        var legs = [];
+        let totalDistance = 0;
+        let totalMinutes = 0;
+        const legs = [];
 
-        for (var index = 0; index < markers.length - 1; index += 1) {
-            var from = markers[index];
-            var to = markers[index + 1];
-            var distanceKm = getDistanceKm(from, to);
-            var minutes = estimateTravelMinutes(distanceKm);
+        for (let index = 0; index < markers.length - 1; index += 1) {
+            const from = markers[index];
+            const to = markers[index + 1];
+            const distanceKm = getDistanceKm(from, to);
+            const minutes = estimateTravelMinutes(distanceKm);
 
             totalDistance += distanceKm;
             totalMinutes += minutes;
@@ -295,22 +295,22 @@
             return null;
         }
 
-        var path = [];
-        var legs = [];
-        var totalDistanceMeters = 0;
-        var totalDurationSeconds = 0;
+        const path = [];
+        const legs = [];
+        let totalDistanceMeters = 0;
+        let totalDurationSeconds = 0;
 
         data.segments.forEach(function (segment, index) {
-            var route = segment && segment.routes && segment.routes[0];
+            const route = segment && segment.routes && segment.routes[0];
             if (!route || route.result_code !== 0) {
                 throw new Error("No route");
             }
 
-            var summary = route.summary || {};
-            var distanceMeters = Number(summary.distance || 0);
-            var durationSeconds = Number(summary.duration || 0);
-            var durationMinutes = Math.max(1, Math.ceil(durationSeconds / 60));
-            var sections = route.sections || [];
+            const summary = route.summary || {};
+            const distanceMeters = Number(summary.distance || 0);
+            const durationSeconds = Number(summary.duration || 0);
+            const durationMinutes = Math.max(1, Math.ceil(durationSeconds / 60));
+            const sections = route.sections || [];
 
             totalDistanceMeters += distanceMeters;
             totalDurationSeconds += durationSeconds;
@@ -323,8 +323,8 @@
 
             sections.forEach(function (section) {
                 (section.roads || []).forEach(function (road) {
-                    var vertexes = road.vertexes || [];
-                    for (var pointIndex = 0; pointIndex < vertexes.length - 1; pointIndex += 2) {
+                    const vertexes = road.vertexes || [];
+                    for (let pointIndex = 0; pointIndex < vertexes.length - 1; pointIndex += 2) {
                         path.push(new window.kakao.maps.LatLng(vertexes[pointIndex + 1], vertexes[pointIndex]));
                     }
                 });
@@ -341,7 +341,7 @@
     }
 
     function loadRoadRoute(map, mapElement, markers, routePath, messageElement) {
-        var routeUrl = mapElement.dataset.routeUrl || "";
+        const routeUrl = mapElement.dataset.routeUrl || "";
 
         if (!routeUrl || !window.fetch) {
             drawStraightRoute(map, routePath);
@@ -365,7 +365,7 @@
                 });
             })
             .then(function (data) {
-                var roadRoute = buildRoadRouteSummary(data, markers);
+                const roadRoute = buildRoadRouteSummary(data, markers);
                 if (!roadRoute || !roadRoute.path || roadRoute.path.length < 2) {
                     throw new Error("Empty route");
                 }
@@ -383,10 +383,10 @@
     }
 
     function renderRouteSummary(markers, routeSummary) {
-        var summaryElement = document.querySelector("[data-trip-route-summary]");
-        var totalElement = document.querySelector("[data-trip-route-total]");
-        var legsElement = document.querySelector("[data-trip-route-legs]");
-        var noteElement = document.querySelector("[data-trip-route-note]");
+        const summaryElement = document.querySelector("[data-trip-route-summary]");
+        const totalElement = document.querySelector("[data-trip-route-total]");
+        const legsElement = document.querySelector("[data-trip-route-legs]");
+        const noteElement = document.querySelector("[data-trip-route-note]");
 
         if (!summaryElement || !totalElement || !legsElement) {
             return;
@@ -399,7 +399,7 @@
             return;
         }
 
-        var summary = routeSummary || buildStraightRouteSummary(markers);
+        const summary = routeSummary || buildStraightRouteSummary(markers);
 
         totalElement.textContent = "총 " + summary.totalDistanceText
             + " · 약 " + summary.totalDurationText;
@@ -429,7 +429,7 @@
             return;
         }
 
-        var places = new window.kakao.maps.services.Places();
+        const places = new window.kakao.maps.services.Places();
         places.keywordSearch(destination, function (results, status) {
             if (status !== window.kakao.maps.services.Status.OK || !results.length) {
                 return;
@@ -465,7 +465,7 @@
     }
 
     function formatCoordinate(value) {
-        var number = Number(value);
+        const number = Number(value);
         if (!isFinite(number)) {
             return "";
         }
@@ -474,33 +474,33 @@
     }
 
     window.TravelMap.initializeLocationSearch = function (apiReady) {
-        var panel = document.querySelector("[data-location-modal-panel]");
-        var modal = document.querySelector("[data-location-modal]");
+        const panel = document.querySelector("[data-location-modal-panel]");
+        const modal = document.querySelector("[data-location-modal]");
 
         if (!panel || !modal) {
             return;
         }
 
-        var placeInput = document.getElementById("placeName");
-        var latitudeInput = document.getElementById("latitude");
-        var longitudeInput = document.getElementById("longitude");
-        var openButton = document.getElementById("locationSearchButton");
-        var statusElement = panel.querySelector("[data-location-status]");
-        var form = panel.closest("form");
-        var keywordInput = modal.querySelector("[data-location-modal-keyword]");
-        var searchButton = modal.querySelector("[data-location-modal-search]");
-        var modalStatusElement = modal.querySelector("[data-location-modal-status]");
-        var resultsElement = modal.querySelector("[data-location-modal-results]");
-        var mapElement = modal.querySelector("[data-location-modal-map]");
-        var selectedElement = modal.querySelector("[data-location-modal-selected]");
-        var applyButton = modal.querySelector("[data-location-modal-apply]");
+        const placeInput = document.getElementById("placeName");
+        const latitudeInput = document.getElementById("latitude");
+        const longitudeInput = document.getElementById("longitude");
+        const openButton = document.getElementById("locationSearchButton");
+        const statusElement = panel.querySelector("[data-location-status]");
+        const form = panel.closest("form");
+        const keywordInput = modal.querySelector("[data-location-modal-keyword]");
+        const searchButton = modal.querySelector("[data-location-modal-search]");
+        const modalStatusElement = modal.querySelector("[data-location-modal-status]");
+        const resultsElement = modal.querySelector("[data-location-modal-results]");
+        const mapElement = modal.querySelector("[data-location-modal-map]");
+        const selectedElement = modal.querySelector("[data-location-modal-selected]");
+        const applyButton = modal.querySelector("[data-location-modal-apply]");
 
-        var pickerMap = null;
-        var marker = null;
-        var infoWindow = null;
-        var geocoder = null;
-        var pendingLocation = null;
-        var lastFocusedElement = null;
+        let pickerMap = null;
+        let marker = null;
+        let infoWindow = null;
+        let geocoder = null;
+        let pendingLocation = null;
+        let lastFocusedElement = null;
 
         function setStatus(text, tone) {
             if (!statusElement) {
@@ -550,8 +550,8 @@
                 return;
             }
 
-            var title = location.place || location.address || "선택한 지도 위치";
-            var detail = location.address && location.address !== title
+            const title = location.place || location.address || "선택한 지도 위치";
+            const detail = location.address && location.address !== title
                 ? title + " · " + location.address
                 : title;
 
@@ -574,8 +574,8 @@
         }
 
         function buildInfoWindowContent(location) {
-            var title = location.place || location.address || "선택한 지도 위치";
-            var description = location.address || "위도 " + location.lat + " · 경도 " + location.lng;
+            const title = location.place || location.address || "선택한 지도 위치";
+            const description = location.address || "위도 " + location.lat + " · 경도 " + location.lng;
 
             return [
                 '<div class="trip-map-location-popup">',
@@ -591,7 +591,7 @@
                 return;
             }
 
-            var position = new window.kakao.maps.LatLng(location.lat, location.lng);
+            const position = new window.kakao.maps.LatLng(location.lat, location.lng);
             setSelectedLocation(location);
 
             pickerMap.setCenter(position);
@@ -622,7 +622,7 @@
         }
 
         function previewClickedLocation(latLng) {
-            var location = {
+            const location = {
                 place: "",
                 address: "",
                 lat: formatCoordinate(latLng.getLat()),
@@ -636,7 +636,7 @@
 
             setModalStatus("선택한 위치의 주소를 확인하고 있습니다.", "");
             geocoder.coord2Address(location.lng, location.lat, function (results, status) {
-                var address = "";
+                let address = "";
                 if (status === window.kakao.maps.services.Status.OK && results.length > 0) {
                     address = results[0].road_address ? results[0].road_address.address_name : "";
                     if (!address && results[0].address) {
@@ -650,12 +650,12 @@
         }
 
         function centerMapByDestination() {
-            var destination = panel.dataset.destination || "";
+            const destination = panel.dataset.destination || "";
             if (!destination || !window.kakao.maps.services || !pickerMap) {
                 return;
             }
 
-            var places = new window.kakao.maps.services.Places();
+            const places = new window.kakao.maps.services.Places();
             places.keywordSearch(destination, function (results, status) {
                 if (status !== window.kakao.maps.services.Status.OK || !results.length) {
                     return;
@@ -667,7 +667,7 @@
         }
 
         function ensurePickerMap(callback) {
-            var defaultCenter = new window.kakao.maps.LatLng(37.566826, 126.978656);
+            const defaultCenter = new window.kakao.maps.LatLng(37.566826, 126.978656);
 
             if (!pickerMap) {
                 pickerMap = new window.kakao.maps.Map(mapElement, {
@@ -694,7 +694,7 @@
 
         function renderResults(results) {
             resultsElement.innerHTML = results.map(function (result, index) {
-                var address = result.road_address_name || result.address_name || "";
+                const address = result.road_address_name || result.address_name || "";
 
                 return [
                     '<button class="schedule-location-result" type="button"',
@@ -726,14 +726,14 @@
         }
 
         function buildSearchKeyword(keyword) {
-            var destination = panel.dataset.destination || "";
+            const destination = panel.dataset.destination || "";
             return destination && keyword.indexOf(destination) === -1
                 ? destination + " " + keyword
                 : keyword;
         }
 
         function searchPlaces() {
-            var keyword = keywordInput.value.trim();
+            const keyword = keywordInput.value.trim();
 
             if (!keyword) {
                 setModalStatus("방문 장소를 먼저 입력해주세요.", "warning");
@@ -746,7 +746,7 @@
             resultsElement.hidden = true;
             resultsElement.innerHTML = "";
 
-            var places = new window.kakao.maps.services.Places();
+            const places = new window.kakao.maps.services.Places();
             places.keywordSearch(buildSearchKeyword(keyword), function (results, status) {
                 if (status !== window.kakao.maps.services.Status.OK || !results.length) {
                     setModalStatus("검색 결과가 없습니다. 장소명을 조금 더 구체적으로 입력해주세요.", "warning");
@@ -783,7 +783,7 @@
             clearPreview(true);
 
             ensurePickerMap(function () {
-                var savedLocation = readSavedLocation();
+                const savedLocation = readSavedLocation();
                 if (savedLocation) {
                     previewLocation(savedLocation);
                     setModalStatus("현재 저장된 위치입니다. 다른 장소를 검색할 수 있습니다.", "success");
