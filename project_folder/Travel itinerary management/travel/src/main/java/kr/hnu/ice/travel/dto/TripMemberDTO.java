@@ -3,6 +3,10 @@ package kr.hnu.ice.travel.dto;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * 작성자: 김준섭
+ * 기능 설명: 여행 참여자 정보를 화면과 데이터 계층 사이에서 전달하는 DTO 클래스입니다.
+ */
 public class TripMemberDTO {
     private static final DateTimeFormatter JOINED_AT_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");

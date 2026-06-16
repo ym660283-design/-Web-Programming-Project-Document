@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
 
+/**
+ * 작성자: 김준섭
+ * 기능 설명: 여행 공유 초대 참여와 참여자 관리 요청을 처리하는 서블릿입니다.
+ */
 @WebServlet(urlPatterns = {"/share", "/members"})
 public class MemberServlet extends HttpServlet {
     private static final int SHARE_CODE_RETRY_LIMIT = 5;

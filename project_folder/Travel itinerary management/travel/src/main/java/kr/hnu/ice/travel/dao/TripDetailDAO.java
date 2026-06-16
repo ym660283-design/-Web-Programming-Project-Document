@@ -14,6 +14,10 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 작성자: 김용민
+ * 기능 설명: 여행 세부 일정 데이터의 조회, 저장, 수정, 삭제를 담당하는 DAO 클래스입니다.
+ */
 public class TripDetailDAO {
     public List<TripDetailDTO> findByTripId(int tripId) throws SQLException {
         String sql = "SELECT detail_id, trip_id, schedule_date, place_name, visit_time, "

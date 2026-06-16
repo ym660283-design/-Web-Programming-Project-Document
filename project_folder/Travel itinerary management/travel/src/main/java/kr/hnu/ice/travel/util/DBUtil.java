@@ -10,6 +10,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+/**
+ * 작성자: 김준섭, 김용민
+ * 기능 설명: 데이터베이스 연결과 기본 테이블 초기화를 담당하는 유틸리티 클래스입니다.
+ */
 public final class DBUtil {
     private static final String CONFIG_FILE = "db.properties";
     private static final String[] TABLE_DEFINITIONS = {
