@@ -1,5 +1,3 @@
-# Travel Itinerary Management 발표자료
-
 ## 발표자료 바로가기
 
 - [0. 프로젝트 개요](./docs/0-project-overview.html)
