@@ -39,10 +39,13 @@ jobs:
       - name: Install page build tools
         run: npm install --no-save @marp-team/marp-cli marked
 
-      - name: Build README page
+      - name: Build combined slide source
         run: node scripts/build-pages.mjs
 
-      - name: Build Marp slides
+      - name: Build main presentation
+        run: npx marp _build/presentation.md -o _site/index.html --html --allow-local-files
+
+      - name: Build individual Marp slides
         run: |
           npx marp docs/0-project-overview.md -o _site/docs/0-project-overview.html --html --allow-local-files
           npx marp docs/1-requirement-analysis.md -o _site/docs/1-requirement-analysis.html --html --allow-local-files
